@@ -3,39 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SDG 14: The Oceanic Frontier — Cinematic 3D Deck</title>
+  <title>SDG 14: Life Below Water — Cinematic Deck</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background-color: #030712; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
 
-    #webgl-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
-
-    /* --- Real Cinematic Video Background Engine --- */
-    .bg-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 0;
-      opacity: 0;
-      transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
-      filter: brightness(0.72) contrast(1.08) saturate(1.1);
-    }
-    .bg-video.active {
-      opacity: 1;
-    }
-
-    /* Fallback static poster layers */
+    /* Layer 0: High-Resolution Photo Backgrounds (ALWAYS INSTANTLY VISIBLE) */
     .bg-layer {
       position: fixed;
       top: 0;
@@ -44,49 +22,272 @@
       height: 100vh;
       background-size: cover;
       background-position: center;
-      z-index: -1;
+      z-index: 0;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      transition: opacity 1.0s ease;
+      filter: brightness(0.85) contrast(1.05) saturate(1.1);
     }
     .bg-layer.active {
       opacity: 1;
     }
 
-    .cinematic-vignette.cinematic-vignette { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(3, 7, 18, 0.25) 0%, rgba(3, 7, 18, 0.88) 100%), linear-gradient(to bottom, rgba(3, 7, 18, 0.6) 0%, transparent 25%, transparent 75%, rgba(3, 7, 18, 0.9) 100%); z-index: 2; pointer-events: none; }
+    /* Layer 1: Real Documentary Video Loops (Smoothly blend over photos) */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      pointer-events: none;
+      filter: brightness(0.82) contrast(1.05) saturate(1.1);
+    }
+    .bg-video.active.playing {
+      opacity: 0.85;
+    }
 
-    .stage { position: relative; z-index: 10; width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem 4rem; }
+    /* Layer 2: 3D Bioluminescent Particle Canvas */
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      pointer-events: none;
+    }
 
-    .hud-top { display: flex; justify-content: space-between; align-items: center; }
-    .depth-badge { font-family: 'Space Grotesk', monospace; font-size: 0.85rem; font-weight: 700; color: #38bdf8; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.35rem 0.85rem; border-radius: 9999px; letter-spacing: 0.08em; text-transform: uppercase; box-shadow: 0 0 20px rgba(56, 189, 248, 0.25); }
+    /* Layer 3: Soft Cinematic Vignette */
+    .cinematic-vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(3, 7, 18, 0.12) 0%, rgba(3, 7, 18, 0.65) 100%),
+                  linear-gradient(to bottom, rgba(3, 7, 18, 0.45) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.75) 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
 
-    .slide-viewport { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; }
-    .slide { position: absolute; width: 100%; max-width: 1200px; opacity: 0; transform: translateY(25px) scale(0.97); pointer-events: none; transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
-    .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    /* Layer 10: Main Presentation Stage */
+    .stage {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2.5rem 4.5rem;
+    }
 
-    .slide-title { font-size: 3.4rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 1.1rem; background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; max-width: 950px; }
-    .slide-subtitle { font-size: 1.3rem; color: #94a3b8; margin-bottom: 2.5rem; font-weight: 400; max-width: 750px; }
+    /* Top HUD */
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .depth-badge {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+    }
+    .portal-link {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+    }
+    .portal-link:hover {
+      color: #38bdf8;
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.15);
+    }
 
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-    .metric-card { background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 1.25rem; padding: 1.75rem 2rem; position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
-    .metric-card:hover { transform: translateY(-4px); border-color: rgba(56, 189, 248, 0.4); }
-    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+    /* Slide Viewport */
+    .slide-viewport {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1240px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide-title {
+      font-size: 3.25rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      max-width: 1050px;
+    }
+    .slide-subtitle {
+      font-size: 1.25rem;
+      color: #94a3b8;
+      margin-bottom: 2.2rem;
+      font-weight: 400;
+      max-width: 850px;
+    }
+
+    /* Metric Cards (Exact match to media_1788715285577.png) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1150px;
+    }
+    .metric-card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
 
     .border-cyan::before { background: #38bdf8; box-shadow: 0 0 15px #38bdf8; }
     .border-emerald::before { background: #34d399; box-shadow: 0 0 15px #34d399; }
+    .border-blue::before { background: #60a5fa; box-shadow: 0 0 15px #60a5fa; }
     .border-rose::before { background: #fb7185; box-shadow: 0 0 15px #fb7185; }
 
     .card-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.5rem; }
-    .card-stat { font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; line-height: 1.1; }
-    .card-desc { font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; }
+    .card-stat { font-family: 'Space Grotesk', sans-serif; font-size: 2.35rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; line-height: 1.15; }
+    .card-desc { font-size: 0.95rem; color: #cbd5e1; line-height: 1.55; }
 
-    .nav-controls { display: flex; align-items: center; gap: 1rem; }
-    .btn-nav { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(148, 163, 184, 0.2); color: #f8fafc; width: 3.25rem; height: 3.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.25rem; transition: all 0.3s ease; backdrop-filter: blur(12px); }
-    .btn-nav:hover { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; transform: scale(1.08); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+    /* HUD Bottom Controls */
+    .hud-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: opacity 0.5s ease;
+    }
+    .hud-bottom.autohide {
+      opacity: 0.15;
+    }
+    .hud-bottom.autohide:hover {
+      opacity: 1;
+    }
 
-    .slide-counter { font-family: 'Space Grotesk', monospace; font-size: 1.1rem; font-weight: 700; color: #94a3b8; }
-    .slide-counter span { color: #f8fafc; }
+    /* Direct Slide Jump Bar */
+    .slide-dots-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 0.35rem 0.65rem;
+      border-radius: 9999px;
+      backdrop-filter: blur(12px);
+    }
+    .dot-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #64748b;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.5rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dot-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .dot-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
+    }
 
-    
+    /* Navigation Arrows & Counter */
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .btn-nav {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #f8fafc;
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.35rem;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(12px);
+    }
+    .btn-nav:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+    }
+    .slide-counter {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .slide-counter span {
+      color: #f8fafc;
+    }
+
+    /* Fullscreen Button */
     .btn-action {
       background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(148, 163, 184, 0.25);
@@ -100,13 +301,13 @@
       align-items: center;
       gap: 0.5rem;
       backdrop-filter: blur(12px);
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease, background 0.3s ease, border-color 0.3s ease;
+      transition: opacity 0.4s ease, transform 0.2s ease;
     }
     .btn-action:hover {
       background: rgba(56, 189, 248, 0.25);
       border-color: #38bdf8;
       color: #ffffff;
-      transform: scale(1.05);
+      transform: scale(1.04);
       opacity: 1 !important;
     }
     .btn-action.dimmed {
@@ -114,20 +315,6 @@
     }
     .btn-action.dimmed:hover {
       opacity: 0.95 !important;
-      transform: scale(1.04);
-    }
-
-    .hud-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hud-bottom.autohide {
-      opacity: 0.08;
-    }
-    .hud-bottom.autohide:hover {
-      opacity: 1;
     }
 
     body.simulated-fullscreen {
@@ -139,391 +326,498 @@
       overflow: hidden;
       z-index: 999999;
     }
-
   </style>
 </head>
 <body>
-  <!-- Real Cinematic Ocean Video Loops (BBC / NatGeo Documentary Grade) -->
-  <video id="vid-surface" class="bg-video active" src="assets/surface.mp4" autoplay loop muted playsinline poster="assets/surface.jpg"></video>
-  <video id="vid-coral" class="bg-video" src="assets/coral.mp4" autoplay loop muted playsinline poster="assets/coral.jpg"></video>
-  <video id="vid-abyss" class="bg-video" src="assets/abyss.mp4" autoplay loop muted playsinline poster="assets/abyss.jpg"></video>
 
-  <!-- Fallback High-Res Poster Layers -->
+  <!-- Layer 0: High Resolution Fallback Posters (Instant Display) -->
   <div id="bg-surface" class="bg-layer active" style="background-image: url('assets/surface.jpg');"></div>
   <div id="bg-coral" class="bg-layer" style="background-image: url('assets/coral.jpg');"></div>
   <div id="bg-abyss" class="bg-layer" style="background-image: url('assets/abyss.jpg');"></div>
 
-  <div class="cinematic-vignette"></div>
+  <!-- Layer 1: Real Documentary Video Loops -->
+  <video id="vid-surface" class="bg-video active" src="assets/surface.mp4" autoplay loop muted playsinline poster="assets/surface.jpg"></video>
+  <video id="vid-coral" class="bg-video" src="assets/coral.mp4" autoplay loop muted playsinline poster="assets/coral.jpg"></video>
+  <video id="vid-abyss" class="bg-video" src="assets/abyss.mp4" autoplay loop muted playsinline poster="assets/abyss.jpg"></video>
+
+  <!-- Layer 2: WebGL 3D Bioluminescent Particles -->
   <canvas id="webgl-canvas"></canvas>
 
+  <!-- Layer 3: Cinematic Vignette -->
+  <div class="cinematic-vignette"></div>
+
+  <!-- Layer 10: Presentation Stage -->
   <main class="stage">
     
+    <!-- Top HUD -->
     <header class="hud-top">
       <span class="depth-badge" id="depth-display">DEPTH: 0M • SUNLIGHT ZONE</span>
-      <div></div>
+      <a href="speaker_portal.html" class="portal-link" target="_blank">📱 Speaker Portal & Timer</a>
     </header>
 
+    <!-- Slide Viewport (12 Clean Slides) -->
     <div class="slide-viewport">
-      <!-- Slide 1 -->
-      <section class="slide active" data-depth="0m • Sunlight Zone" data-bg="bg-surface">
+      
+      <section class="slide active" data-depth="0M • SUNLIGHT ZONE" data-bg="bg-surface" data-index="0">
         <h1 class="slide-title">SDG 14: Life Below Water</h1>
         <p class="slide-subtitle">How Ocean Progress Is Governed and Measured</p>
         <div class="metrics-grid">
-          <div class="metric-card border-rose">
+          
+          <div class="metric-card border-cyan">
             <div class="card-label">TARGET 14.1</div>
             <div class="card-stat">Reduce Pollution</div>
-            <p class="card-desc">Stopping waste before it reaches the sea</p>
+            <div class="card-desc">Stopping waste before it reaches the sea</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-cyan">
             <div class="card-label">TARGET 14.2</div>
             <div class="card-stat">Ecosystem Resilience</div>
-            <p class="card-desc">Protecting marine habitats & biodiversity</p>
+            <div class="card-desc">Protecting marine habitats & biodiversity</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-cyan">
             <div class="card-label">TARGET 14.3</div>
             <div class="card-stat">Ocean Chemistry</div>
-            <p class="card-desc">Tracking global acidification trends</p>
+            <div class="card-desc">Tracking global acidification trends</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 2 -->
-      <section class="slide" data-depth="100m • Epipelagic" data-bg="bg-surface">
+      <section class="slide" data-depth="100M • EPIPELAGIC" data-bg="bg-surface" data-index="1">
         <h1 class="slide-title">The Chain of Ocean Risk</h1>
         <p class="slide-subtitle">Three Targets in One Continuous Ecological Cascade</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-cyan">
             <div class="card-label">01 • PRESSURE</div>
             <div class="card-stat">Target 14.1</div>
-            <p class="card-desc">Land runoff, fertilizer nutrients, and plastic accumulation</p>
+            <div class="card-desc">Land runoff, fertilizer nutrients, and plastic accumulation</div>
           </div>
-          <div class="metric-card border-cyan">
+
+          <div class="metric-card border-emerald">
             <div class="card-label">02 • RESILIENCE</div>
             <div class="card-stat">Target 14.2</div>
-            <p class="card-desc">Coral reefs, mangrove buffers, and coastal ecosystems under stress</p>
+            <div class="card-desc">Coral reefs, mangrove buffers, and coastal ecosystems under stress</div>
           </div>
-          <div class="metric-card border-cyan">
+
+          <div class="metric-card border-blue">
             <div class="card-label">03 • CHEMISTRY</div>
             <div class="card-stat">Target 14.3</div>
-            <p class="card-desc">Absorbing excess CO2, reducing seawater pH across the planet</p>
+            <div class="card-desc">Absorbing excess CO2, reducing seawater pH across the planet</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 3 -->
-      <section class="slide" data-depth="180m • Coastal Shelf" data-bg="bg-surface">
+      <section class="slide" data-depth="180M • COASTAL SHELF" data-bg="bg-surface" data-index="2">
         <h1 class="slide-title">Target 14.1: Marine Pollution</h1>
         <p class="slide-subtitle">Stopping Contamination at the Terrestrial Source</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-cyan">
             <div class="card-label">KEY MANDATE</div>
             <div class="card-stat">Source-to-Sea</div>
-            <p class="card-desc">Prevent and significantly reduce all marine pollution</p>
+            <div class="card-desc">Prevent and significantly reduce all marine pollution</div>
           </div>
+
           <div class="metric-card border-cyan">
             <div class="card-label">ORIGIN</div>
             <div class="card-stat">80% Land-Based</div>
-            <p class="card-desc">Agriculture runoff, untreated sewage, and urban waste rivers</p>
+            <div class="card-desc">Agriculture runoff, untreated sewage, and urban waste rivers</div>
           </div>
+
           <div class="metric-card border-cyan">
             <div class="card-label">URGENCY</div>
             <div class="card-stat">Target 2025</div>
-            <p class="card-desc">Originally scheduled for 2025—now past its official deadline</p>
+            <div class="card-desc">Originally scheduled for 2025—now past its official deadline</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 4 -->
-      <section class="slide" data-depth="200m • Sunlight Boundary" data-bg="bg-surface">
+      <section class="slide" data-depth="200M • SUNLIGHT BOUNDARY" data-bg="bg-surface" data-index="3">
         <h1 class="slide-title">Indicator 14.1.1: Two Pathways</h1>
         <p class="slide-subtitle">Monitoring Invisible Nutrients vs. Visible Solid Waste</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-cyan">
             <div class="card-label">INDICATOR 14.1.1(a)</div>
             <div class="card-stat">Coastal Eutrophication</div>
-            <p class="card-desc">Nitrogen and phosphorus from fertilizers triggering algal blooms</p>
+            <div class="card-desc">Nitrogen and phosphorus from fertilizers triggering algal blooms</div>
           </div>
+
           <div class="metric-card border-cyan">
             <div class="card-label">INDICATOR 14.1.1(b)</div>
             <div class="card-stat">Plastic Debris Density</div>
-            <p class="card-desc">Macro-plastics and micro-plastics in surface waters and shorelines</p>
+            <div class="card-desc">Macro-plastics and micro-plastics in surface waters and shorelines</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 5 -->
-      <section class="slide" data-depth="250m • Upper Reef" data-bg="bg-coral">
+      <section class="slide" data-depth="250M • UPPER REEF" data-bg="bg-coral" data-index="4">
         <h1 class="slide-title">Measuring Pollution: Space to Shore</h1>
         <p class="slide-subtitle">Satellites and Standardized Coastal Transects</p>
         <div class="metrics-grid">
-          <div class="metric-card border-emerald">
+          
+          <div class="metric-card border-cyan">
             <div class="card-label">NUTRIENT SENSING</div>
             <div class="card-stat">Satellite Chlorophyll-a</div>
-            <p class="card-desc">MODIS & Sentinel satellites scan ocean color for algal bloom anomalies</p>
+            <div class="card-desc">MODIS & Sentinel satellites scan ocean color for algal bloom anomalies</div>
           </div>
-          <div class="metric-card border-emerald">
+
+          <div class="metric-card border-cyan">
             <div class="card-label">PLASTIC TRACKING</div>
             <div class="card-stat">100m Beach Transects</div>
-            <p class="card-desc">Standardized shoreline counts, surface net trawls, and river mouth monitors</p>
+            <div class="card-desc">Standardized shoreline counts, surface net trawls, and river mouth monitors</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 6 -->
-      <section class="slide" data-depth="350m • Mesopelagic" data-bg="bg-coral">
+      <section class="slide" data-depth="350M • MESOPELAGIC" data-bg="bg-coral" data-index="5">
         <h1 class="slide-title">Governance: Target 14.1</h1>
         <p class="slide-subtitle">Custodianship and the Global Plastics Treaty</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-cyan">
             <div class="card-label">GLOBAL CUSTODIAN</div>
             <div class="card-stat">UNEP</div>
-            <p class="card-desc">United Nations Environment Programme harmonizes national data</p>
+            <div class="card-desc">United Nations Environment Programme harmonizes national data</div>
           </div>
+
           <div class="metric-card border-cyan">
             <div class="card-label">BINDING LAW</div>
             <div class="card-stat">INC Plastics Treaty</div>
-            <p class="card-desc">Negotiating a legally binding instrument spanning full plastic lifecycle</p>
+            <div class="card-desc">Negotiating a legally binding instrument spanning full plastic lifecycle</div>
           </div>
+
           <div class="metric-card border-cyan">
             <div class="card-label">REGIONAL PACTS</div>
             <div class="card-stat">Regional Seas</div>
-            <p class="card-desc">Conventions coordinating shared international river basins and gulfs</p>
+            <div class="card-desc">Conventions coordinating shared international river basins and gulfs</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 7 -->
-      <section class="slide" data-depth="500m • Living Reef Core" data-bg="bg-coral">
+      <section class="slide" data-depth="500M • LIVING REEF CORE" data-bg="bg-coral" data-index="6">
         <h1 class="slide-title">Target 14.2: Ecosystem Resilience</h1>
         <p class="slide-subtitle">Managing Whole Habitats Instead of Single Species</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-emerald">
             <div class="card-label">PARADIGM SHIFT</div>
             <div class="card-stat">Ecosystem-Based (EBM)</div>
-            <p class="card-desc">Holistic management balancing conservation, fisheries, and tourism</p>
+            <div class="card-desc">Holistic management balancing conservation, fisheries, and tourism</div>
           </div>
+
           <div class="metric-card border-emerald">
             <div class="card-label">CORE GOAL</div>
             <div class="card-stat">Restore & Protect</div>
-            <p class="card-desc">Strengthen resilience of coral reefs, mangroves, and seagrass beds</p>
+            <div class="card-desc">Strengthen resilience of coral reefs, mangroves, and seagrass beds</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 8 -->
-      <section class="slide" data-depth="700m • Reef Drop-off" data-bg="bg-coral">
+      <section class="slide" data-depth="700M • REEF DROP-OFF" data-bg="bg-coral" data-index="7">
         <h1 class="slide-title">Indicator 14.2.1 & Its Limitation</h1>
         <p class="slide-subtitle">Measuring Policy Adoption vs. Ecological Health</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-emerald">
             <div class="card-label">INDICATOR 14.2.1</div>
             <div class="card-stat">National EBM Plans</div>
-            <p class="card-desc">Counts how many countries legally adopt ecosystem-based marine plans</p>
+            <div class="card-desc">Counts how many countries legally adopt ecosystem-based marine plans</div>
           </div>
-          <div class="metric-card border-emerald">
+
+          <div class="metric-card border-rose">
             <div class="card-label">CRITICAL LIMIT</div>
             <div class="card-stat">Process, Not Outcome</div>
-            <p class="card-desc">Tracks paperwork and policies—does not prove fish stocks or corals recovered</p>
+            <div class="card-desc">Tracks paperwork and policies—does not prove fish stocks or corals recovered</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 9 -->
-      <section class="slide" data-depth="900m • Twilight Entrance" data-bg="bg-coral">
+      <section class="slide" data-depth="900M • TWILIGHT ENTRANCE" data-bg="bg-coral" data-index="8">
         <h1 class="slide-title">Governance: Target 14.2</h1>
-        <p class="slide-subtitle">The Kunming-Montreal Global 30x30 Target</p>
+        <p class="slide-subtitle">The Kunming-Montreal Global 30×30 Target</p>
         <div class="metrics-grid">
+          
           <div class="metric-card border-emerald">
             <div class="card-label">GLOBAL BENCHMARK</div>
-            <div class="card-stat">30x30 Target</div>
-            <p class="card-desc">CBD mandate: Protect 30% of coastal and marine areas by 2030</p>
+            <div class="card-stat">30×30 Target</div>
+            <div class="card-desc">CBD mandate: Protect 30% of coastal and marine areas by 2030</div>
           </div>
+
           <div class="metric-card border-emerald">
             <div class="card-label">HIGH SEAS PACT</div>
             <div class="card-stat">BBNJ Treaty</div>
-            <p class="card-desc">Historic UN treaty enabling marine protected areas in international waters</p>
+            <div class="card-desc">Historic UN treaty enabling marine protected areas in international waters</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 10 -->
-      <section class="slide" data-depth="1,200m • Bathypelagic Abyss" data-bg="bg-abyss">
+      <section class="slide" data-depth="1,200M • BATHYPELAGIC ABYSS" data-bg="bg-abyss" data-index="9">
         <h1 class="slide-title">Target 14.3: Ocean Acidification</h1>
         <p class="slide-subtitle">The Silent Chemical Disruption of Marine Life</p>
         <div class="metrics-grid">
-          <div class="metric-card border-rose">
+          
+          <div class="metric-card border-blue">
             <div class="card-label">ACIDITY SURGE</div>
             <div class="card-stat">+30% Acidity</div>
-            <p class="card-desc">Surface ocean pH dropped by ~0.1 units since industrialization</p>
+            <div class="card-desc">Surface ocean pH dropped by ~0.1 units since industrialization</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-blue">
             <div class="card-label">CARBON SINK</div>
             <div class="card-stat">25% of CO2</div>
-            <p class="card-desc">The ocean absorbs a quarter of all human fossil carbon emissions</p>
+            <div class="card-desc">The ocean absorbs a quarter of all human fossil carbon emissions</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-blue">
             <div class="card-label">IMPACT</div>
             <div class="card-stat">Shell Corrosion</div>
-            <p class="card-desc">Corals, mollusks, and plankton struggle to build calcium carbonate shells</p>
+            <div class="card-desc">Corals, mollusks, and plankton struggle to build calcium carbonate shells</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 11 -->
-      <section class="slide" data-depth="2,000m • Deep Bathypelagic" data-bg="bg-abyss">
+      <section class="slide" data-depth="2,000M • DEEP BATHYPELAGIC" data-bg="bg-abyss" data-index="10">
         <h1 class="slide-title">Indicator 14.3.1: Precision Chemistry</h1>
         <p class="slide-subtitle">Autonomous Sensors and Representative Sampling</p>
         <div class="metrics-grid">
-          <div class="metric-card border-rose">
+          
+          <div class="metric-card border-blue">
             <div class="card-label">INDICATOR 14.3.1</div>
             <div class="card-stat">Average Seawater pH</div>
-            <p class="card-desc">Measured at representative marine sampling stations on total pH scale</p>
+            <div class="card-desc">Measured at representative marine sampling stations on total pH scale</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-blue">
             <div class="card-label">GLOBAL SENSORS</div>
             <div class="card-stat">GOA-ON Network</div>
-            <p class="card-desc">Global Ocean Acidification Observing Network: buoys, moorings, and gliders</p>
+            <div class="card-desc">Global Ocean Acidification Observing Network: buoys, moorings, and gliders</div>
           </div>
         </div>
       </section>
 
-      <!-- Slide 12 -->
-      <section class="slide" data-depth="2,500m • Abyssal Floor" data-bg="bg-abyss">
+      <section class="slide" data-depth="2,500M • ABYSSAL FLOOR" data-bg="bg-abyss" data-index="11">
         <h1 class="slide-title">Governance: Science to Action</h1>
         <p class="slide-subtitle">UNESCO-IOC and Closing the Global Data Gap</p>
         <div class="metrics-grid">
-          <div class="metric-card border-rose">
+          
+          <div class="metric-card border-blue">
             <div class="card-label">CUSTODIAN</div>
             <div class="card-stat">UNESCO-IOC</div>
-            <p class="card-desc">Intergovernmental Oceanographic Commission standardizes marine observation</p>
+            <div class="card-desc">Intergovernmental Oceanographic Commission standardizes marine observation</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-blue">
             <div class="card-label">ACTION DECADE</div>
             <div class="card-stat">UN Ocean Decade</div>
-            <p class="card-desc">Equipping developing island nations with low-cost monitoring kits</p>
+            <div class="card-desc">Equipping developing island nations with low-cost monitoring kits</div>
           </div>
-          <div class="metric-card border-rose">
+
+          <div class="metric-card border-cyan">
             <div class="card-label">FINAL TAKEAWAY</div>
             <div class="card-stat">Integrated Action</div>
-            <p class="card-desc">Pollution, ecosystems, and climate must be governed as one ocean</p>
+            <div class="card-desc">Pollution, ecosystems, and climate must be governed as one ocean</div>
           </div>
         </div>
       </section>
     </div>
 
+    <!-- Bottom HUD Navigation -->
     <footer class="hud-bottom">
-      <div class="nav-controls">
-        <button class="btn-nav" id="btn-prev" title="Previous Slide">‹</button>
-        <div class="slide-counter"><span id="curr-slide">01</span> / 12</div>
-        <button class="btn-nav" id="btn-next" title="Next Slide">›</button>
+      
+      <!-- Direct Slide Jump Bar -->
+      <div class="slide-dots-bar">
+        <button class="dot-btn active" onclick="jumpToSlide(0)" title="Slide 01">01</button>
+<button class="dot-btn" onclick="jumpToSlide(1)" title="Slide 02">02</button>
+<button class="dot-btn" onclick="jumpToSlide(2)" title="Slide 03">03</button>
+<button class="dot-btn" onclick="jumpToSlide(3)" title="Slide 04">04</button>
+<button class="dot-btn" onclick="jumpToSlide(4)" title="Slide 05">05</button>
+<button class="dot-btn" onclick="jumpToSlide(5)" title="Slide 06">06</button>
+<button class="dot-btn" onclick="jumpToSlide(6)" title="Slide 07">07</button>
+<button class="dot-btn" onclick="jumpToSlide(7)" title="Slide 08">08</button>
+<button class="dot-btn" onclick="jumpToSlide(8)" title="Slide 09">09</button>
+<button class="dot-btn" onclick="jumpToSlide(9)" title="Slide 10">10</button>
+<button class="dot-btn" onclick="jumpToSlide(10)" title="Slide 11">11</button>
+<button class="dot-btn" onclick="jumpToSlide(11)" title="Slide 12">12</button>
       </div>
 
-      <div style="display: flex; gap: 0.75rem;">
-        <button class="btn-action" id="btn-fullscreen">⛶ Toàn màn hình</button>
+      <!-- Arrow Controls & Counter -->
+      <div class="nav-controls">
+        <button class="btn-nav" id="btn-prev" title="Previous Slide (ArrowLeft / PageUp)">‹</button>
+        <div class="slide-counter"><span id="curr-slide">01</span> / 12</div>
+        <button class="btn-nav" id="btn-next" title="Next Slide (ArrowRight / Space / PageDown)">›</button>
+      </div>
+
+      <!-- Fullscreen Action Button -->
+      <div>
+        <button class="btn-action" id="btn-fullscreen" title="Toggle Fullscreen (F)">⛶ Toàn màn hình</button>
       </div>
     </footer>
 
   </main>
 
+  <!-- Three.js (Isolated with Fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <script>
-    // --- 1. Three.js Particle Physics ---
-    const canvas = document.getElementById('webgl-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // ==========================================
+    // 1. ROBUST THREE.JS PARTICLE PHYSICS ENGINE
+    // ==========================================
+    let particleMaterial = null;
+    try {
+      if (typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        camera.position.z = 50;
 
-    camera.position.z = 50;
+        // Circular soft particle texture
+        const pCanvas = document.createElement('canvas');
+        pCanvas.width = 64; pCanvas.height = 64;
+        const pCtx = pCanvas.getContext('2d');
+        const gradient = pCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(0.3, 'rgba(255,255,255,0.7)');
+        gradient.addColorStop(0.8, 'rgba(255,255,255,0.15)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        pCtx.fillStyle = gradient;
+        pCtx.beginPath();
+        pCtx.arc(32, 32, 32, 0, Math.PI * 2);
+        pCtx.fill();
+        const particleTexture = new THREE.CanvasTexture(pCanvas);
 
-    const particleCount = 1500;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = new Float32Array(particleCount * 3);
+        const particleCount = 1200;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = new Float32Array(particleCount * 3);
 
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 120;
-      positions[i + 1] = (Math.random() - 0.5) * 80;
-      positions[i + 2] = (Math.random() - 0.5) * 60;
+        for (let i = 0; i < particleCount * 3; i += 3) {
+          positions[i] = (Math.random() - 0.5) * 120;
+          positions[i + 1] = (Math.random() - 0.5) * 80;
+          positions[i + 2] = (Math.random() - 0.5) * 60;
 
-      velocities[i] = (Math.random() - 0.5) * 0.02;
-      velocities[i + 1] = Math.random() * 0.03 + 0.01;
-      velocities[i + 2] = (Math.random() - 0.5) * 0.02;
-    }
+          velocities[i] = (Math.random() - 0.5) * 0.015;
+          velocities[i + 1] = Math.random() * 0.025 + 0.008;
+          velocities[i + 2] = (Math.random() - 0.5) * 0.015;
+        }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    const particleMaterial = new THREE.PointsMaterial({
-      size: 1.6,
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.7,
-      blending: THREE.AdditiveBlending
-    });
+        particleMaterial = new THREE.PointsMaterial({
+          size: 2.2,
+          map: particleTexture,
+          color: 0x38bdf8,
+          transparent: true,
+          opacity: 0.65,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
 
-    const particles = new THREE.Points(geometry, particleMaterial);
-    scene.add(particles);
+        const particles = new THREE.Points(geometry, particleMaterial);
+        scene.add(particles);
 
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
-    });
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+          mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+          mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+        });
 
-    function animate() {
-      requestAnimationFrame(animate);
+        function animateParticles() {
+          requestAnimationFrame(animateParticles);
+          const pos = geometry.attributes.position.array;
+          for (let i = 0; i < particleCount * 3; i += 3) {
+            pos[i] += velocities[i];
+            pos[i + 1] += velocities[i + 1];
+            pos[i + 2] += velocities[i + 2];
 
-      const pos = geometry.attributes.position.array;
-      for (let i = 0; i < particleCount * 3; i += 3) {
-        pos[i] += velocities[i];
-        pos[i + 1] += velocities[i + 1];
-        pos[i + 2] += velocities[i + 2];
+            if (pos[i + 1] > 40) pos[i + 1] = -40;
+            if (pos[i] > 60) pos[i] = -60;
+            if (pos[i] < -60) pos[i] = 60;
+          }
+          geometry.attributes.position.needsUpdate = true;
 
-        if (pos[i + 1] > 40) pos[i + 1] = -40;
-        if (pos[i] > 60) pos[i] = -60;
-        if (pos[i] < -60) pos[i] = 60;
+          camera.position.x += (mouseX * 4 - camera.position.x) * 0.04;
+          camera.position.y += (mouseY * 4 - camera.position.y) * 0.04;
+          camera.lookAt(scene.position);
+
+          renderer.render(scene, camera);
+        }
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
       }
-      geometry.attributes.position.needsUpdate = true;
-
-      camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-      camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
-      camera.lookAt(scene.position);
-
-      renderer.render(scene, camera);
+    } catch (e) {
+      console.warn('Three.js particle engine fallback:', e);
     }
-    animate();
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // --- 2. Slide Navigation & Visual Transitions ---
+    // ==========================================
+    // 2. BULLETPROOF SLIDE NAVIGATION & MEDIA
+    // ==========================================
     const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot-btn');
     const bgLayers = document.querySelectorAll('.bg-layer');
+    const allVideos = document.querySelectorAll('.bg-video');
     const depthDisplay = document.getElementById('depth-display');
     const currSlideDisplay = document.getElementById('curr-slide');
+    const btnNext = document.getElementById('btn-next');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const hudBottom = document.querySelector('.hud-bottom');
+
     let currentIndex = 0;
+    let idleTimer = null;
+    let isSimulatedFullscreen = false;
+
+    // Track when video is genuinely playing
+    allVideos.forEach(v => {
+      v.muted = true;
+      v.addEventListener('playing', () => {
+        v.classList.add('playing');
+      });
+      v.play().catch(() => {});
+    });
 
     function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      currentIndex = index;
+
+      // 1. Toggle Slide DOM
       slides.forEach((s, idx) => {
-        s.classList.toggle('active', idx === index);
+        s.classList.toggle('active', idx === currentIndex);
       });
 
-      const activeSlide = slides[index];
+      // 2. Toggle Jump Dots
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentIndex);
+      });
+
+      const activeSlide = slides[currentIndex];
       if (!activeSlide) return;
 
       const targetBgId = activeSlide.dataset.bg;
-      
-      // Switch Videos
+
+      // 3. Switch Background Images (Instant)
+      bgLayers.forEach(bg => {
+        bg.classList.toggle('active', bg.id === targetBgId);
+      });
+
+      // 4. Switch Video Layers
       const vidMap = {
         'bg-surface': 'vid-surface',
         'bg-coral': 'vid-coral',
         'bg-abyss': 'vid-abyss'
       };
       const targetVidId = vidMap[targetBgId];
-      const allVideos = document.querySelectorAll('.bg-video');
+
       allVideos.forEach(v => {
         if (v.id === targetVidId) {
           v.classList.add('active');
@@ -533,71 +827,75 @@
         }
       });
 
-      // Fallback bg layers
-      const bgLayers = document.querySelectorAll('.bg-layer');
-      bgLayers.forEach(bg => {
-        bg.classList.toggle('active', bg.id === targetBgId);
-      });
-
-      if (targetBgId === 'bg-surface') {
-        particleMaterial.color.setHex(0x38bdf8);
-      } else if (targetBgId === 'bg-coral') {
-        particleMaterial.color.setHex(0x34d399);
-      } else {
-        particleMaterial.color.setHex(0x60a5fa);
+      // 5. Adjust Particle Luminescence Color
+      if (particleMaterial && particleMaterial.color) {
+        if (targetBgId === 'bg-surface') {
+          particleMaterial.color.setHex(0x38bdf8);
+        } else if (targetBgId === 'bg-coral') {
+          particleMaterial.color.setHex(0x34d399);
+        } else {
+          particleMaterial.color.setHex(0x60a5fa);
+        }
       }
 
+      // 6. Update HUD Displays
       if (depthDisplay && activeSlide.dataset.depth) {
         depthDisplay.textContent = `DEPTH: ${activeSlide.dataset.depth.toUpperCase()}`;
       }
       if (currSlideDisplay) {
-        currSlideDisplay.textContent = String(index + 1).padStart(2, '0');
+        currSlideDisplay.textContent = String(currentIndex + 1).padStart(2, '0');
       }
     }
 
-    const btnNext = document.getElementById('btn-next');
-    const btnPrev = document.getElementById('btn-prev');
+    function jumpToSlide(idx) {
+      updateSlide(idx);
+      resetActivity();
+    }
 
+    // Navigation button handlers
     if (btnNext) {
-      btnNext.addEventListener('click', () => {
+      btnNext.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (currentIndex < slides.length - 1) {
-          currentIndex++;
-          updateSlide(currentIndex);
+          updateSlide(currentIndex + 1);
         }
+        resetActivity();
       });
     }
 
     if (btnPrev) {
-      btnPrev.addEventListener('click', () => {
+      btnPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (currentIndex > 0) {
-          currentIndex--;
-          updateSlide(currentIndex);
+          updateSlide(currentIndex - 1);
         }
+        resetActivity();
       });
     }
 
+    // Keyboard controls
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
+      resetActivity();
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         if (currentIndex < slides.length - 1) {
-          currentIndex++;
-          updateSlide(currentIndex);
+          updateSlide(currentIndex + 1);
         }
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         if (currentIndex > 0) {
-          currentIndex--;
-          updateSlide(currentIndex);
+          updateSlide(currentIndex - 1);
         }
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
+      } else if (e.key === 'Escape' && isSimulatedFullscreen) {
+        isSimulatedFullscreen = false;
+        document.body.classList.remove('simulated-fullscreen');
+        updateFullscreenUI();
       }
     });
 
-    // --- 3. Rock-Solid Fullscreen Controller with Guaranteed Dimming ---
-    const btnFullscreen = document.getElementById('btn-fullscreen');
-    const hudBottom = document.querySelector('.hud-bottom');
-    let idleTimer = null;
-    let isSimulatedFullscreen = false;
-
+    // ==========================================
+    // 3. FULLSCREEN CONTROLLER & GUARANTEED DIMMING
+    // ==========================================
     function isNativeFullscreen() {
       return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
     }
@@ -639,17 +937,6 @@
     }
 
     window.addEventListener('mousemove', resetActivity);
-    window.addEventListener('keydown', (e) => {
-      resetActivity();
-      if (e.key === 'f' || e.key === 'F') {
-        toggleFullscreen();
-      }
-      if (e.key === 'Escape' && isSimulatedFullscreen) {
-        isSimulatedFullscreen = false;
-        document.body.classList.remove('simulated-fullscreen');
-        updateFullscreenUI();
-      }
-    });
 
     function toggleFullscreen() {
       const docEl = document.documentElement;
@@ -705,13 +992,15 @@
       document.addEventListener(evt, updateFullscreenUI);
     });
 
-    // Auto-play videos on first user interaction or load
+    // Autoplay trigger on first click
     document.addEventListener('click', () => {
       const activeVid = document.querySelector('.bg-video.active');
       if (activeVid && activeVid.paused) activeVid.play().catch(() => {});
     }, { once: true });
 
+    // Initialize Slide 1
     updateSlide(0);
+
   </script>
 </body>
 </html>
