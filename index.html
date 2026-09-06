@@ -13,50 +13,73 @@
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background-color: #030712; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
 
-    /* Layer 0: High-Resolution Photo Backgrounds */
-    .bg-layer {
-      position: fixed;
-      top: -3%;
-      left: -3%;
-      width: 106vw;
-      height: 106vh;
-      background-size: cover;
-      background-position: center;
-      z-index: 0;
-      opacity: 0;
-      transition: opacity 1.0s ease;
-      filter: url(#water-wave) brightness(0.88) contrast(1.05) saturate(1.1);
-      animation: waterBreathe 20s ease-in-out infinite alternate;
+    /* --- 1. Ocean Background Dynamic Drift & Camera Breathing --- */
+    .bg-layer { 
+      position: fixed; 
+      top: -6%; 
+      left: -6%; 
+      width: 112vw; 
+      height: 112vh; 
+      background-size: cover; 
+      background-position: center; 
+      transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1); 
+      z-index: 0; 
+      opacity: 0; 
+      animation: oceanCameraDrift 24s ease-in-out infinite alternate;
+      will-change: transform;
+      filter: brightness(0.88) contrast(1.05) saturate(1.1);
     }
-    .bg-layer.active {
-      opacity: 1;
-    }
-
-    @keyframes waterBreathe {
-      0% { transform: scale(1.01) translate(0px, 0px); }
-      50% { transform: scale(1.05) translate(-10px, -8px); }
-      100% { transform: scale(1.02) translate(8px, -15px); }
+    .bg-layer.active { 
+      opacity: 1; 
     }
 
-    /* Layer 1: Real Documentary Video Loops */
-    .bg-video {
+    @keyframes oceanCameraDrift {
+      0% {
+        transform: scale(1.02) translate(0px, 0px);
+      }
+      33% {
+        transform: scale(1.06) translate(-14px, 10px);
+      }
+      66% {
+        transform: scale(1.04) translate(12px, -12px);
+      }
+      100% {
+        transform: scale(1.07) translate(-6px, -16px);
+      }
+    }
+
+    /* --- 2. Moving Aquatic Caustics & Sunlight Refraction --- */
+    .ocean-caustics {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
+      inset: 0;
       z-index: 1;
-      opacity: 0;
-      transition: opacity 1.4s ease;
       pointer-events: none;
-      filter: brightness(0.82) contrast(1.05) saturate(1.1);
-    }
-    .bg-video.active.playing {
-      opacity: 0.82;
+      opacity: 0.28;
+      background: 
+        radial-gradient(ellipse at 30% 20%, rgba(56, 189, 248, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 70% 60%, rgba(45, 212, 191, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse at 40% 80%, rgba(96, 165, 250, 0.2) 0%, transparent 50%);
+      filter: blur(25px);
+      animation: causticsWave 12s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
     }
 
-    /* Layer 2: WebGL 3D Bioluminescent Particles */
+    @keyframes causticsWave {
+      0% {
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        opacity: 0.22;
+      }
+      50% {
+        transform: scale(1.12) translate(-30px, 20px) rotate(2deg);
+        opacity: 0.36;
+      }
+      100% {
+        transform: scale(1.06) translate(25px, -25px) rotate(-1.5deg);
+        opacity: 0.26;
+      }
+    }
+
+    /* --- 3. WebGL 3D Particle Canvas --- */
     #webgl-canvas {
       position: fixed;
       top: 0;
@@ -67,7 +90,7 @@
       pointer-events: none;
     }
 
-    /* Layer 3: Animated Marine Life Canvas (Sea Turtle, Fish Schools, Jellyfish) */
+    /* --- 4. Living Marine Life Canvas (Sea Turtle, Fish, Jellyfish, Bubbles) --- */
     #marine-canvas {
       position: fixed;
       top: 0;
@@ -78,17 +101,17 @@
       pointer-events: none;
     }
 
-    /* Layer 4: Soft Cinematic Vignette */
+    /* --- 5. Soft Cinematic Vignette --- */
     .cinematic-vignette {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(3, 7, 18, 0.12) 0%, rgba(3, 7, 18, 0.65) 100%),
-                  linear-gradient(to bottom, rgba(3, 7, 18, 0.45) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.75) 100%);
+      background: radial-gradient(circle at center, rgba(3, 7, 18, 0.08) 0%, rgba(3, 7, 18, 0.6) 100%),
+                  linear-gradient(to bottom, rgba(3, 7, 18, 0.4) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.75) 100%);
       z-index: 4;
       pointer-events: none;
     }
 
-    /* Layer 10: Main Presentation Stage */
+    /* --- 10. Presentation Stage --- */
     .stage {
       position: relative;
       z-index: 10;
@@ -181,7 +204,7 @@
       max-width: 850px;
     }
 
-    /* Metric Cards (Exact match to media_1788715285577.png) */
+    /* Metric Cards (Exact match to media_1788716584928.png) */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -220,15 +243,15 @@
     .card-stat { font-family: 'Space Grotesk', sans-serif; font-size: 2.35rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; line-height: 1.15; }
     .card-desc { font-size: 0.95rem; color: #cbd5e1; line-height: 1.55; }
 
-    /* HUD Bottom Controls */
+    /* Bottom HUD and Autohide */
     .hud-bottom {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .hud-bottom.autohide {
-      opacity: 0.15;
+      opacity: 0.1;
     }
     .hud-bottom.autohide:hover {
       opacity: 1;
@@ -305,7 +328,7 @@
       color: #f8fafc;
     }
 
-    /* Fullscreen Button */
+    /* Action Buttons & Fullscreen Dimming */
     .btn-action {
       background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(148, 163, 184, 0.25);
@@ -319,13 +342,13 @@
       align-items: center;
       gap: 0.5rem;
       backdrop-filter: blur(12px);
-      transition: opacity 0.4s ease, transform 0.2s ease;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease, background 0.3s ease, border-color 0.3s ease;
     }
     .btn-action:hover {
       background: rgba(56, 189, 248, 0.25);
       border-color: #38bdf8;
       color: #ffffff;
-      transform: scale(1.04);
+      transform: scale(1.05);
       opacity: 1 !important;
     }
     .btn-action.dimmed {
@@ -333,8 +356,10 @@
     }
     .btn-action.dimmed:hover {
       opacity: 0.95 !important;
+      transform: scale(1.04);
     }
 
+    /* Simulated Full-Window Presentation Fallback */
     body.simulated-fullscreen {
       position: fixed;
       top: 0;
@@ -348,33 +373,21 @@
 </head>
 <body>
 
-  <!-- SVG Water Wave Undulation Filter -->
-  <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
-    <defs>
-      <filter id="water-wave" x="-20%" y="-20%" width="140%" height="140%">
-        <feTurbulence id="turbulence" type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="2" result="warp" />
-        <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="18" in="SourceGraphic" in2="warp" />
-      </filter>
-    </defs>
-  </svg>
+  <!-- Moving Ambient Aquatic Caustics -->
+  <div class="ocean-caustics"></div>
 
-  <!-- Layer 0: High Resolution Fallback Posters (Instant Display) -->
+  <!-- Layer 0: High-Resolution Photo Backgrounds (Vivid 4K) -->
   <div id="bg-surface" class="bg-layer active" style="background-image: url('assets/surface.jpg');"></div>
   <div id="bg-coral" class="bg-layer" style="background-image: url('assets/coral.jpg');"></div>
   <div id="bg-abyss" class="bg-layer" style="background-image: url('assets/abyss.jpg');"></div>
 
-  <!-- Layer 1: Real Documentary Video Loops -->
-  <video id="vid-surface" class="bg-video active" src="assets/surface.mp4" autoplay loop muted playsinline poster="assets/surface.jpg"></video>
-  <video id="vid-coral" class="bg-video" src="assets/coral.mp4" autoplay loop muted playsinline poster="assets/coral.jpg"></video>
-  <video id="vid-abyss" class="bg-video" src="assets/abyss.mp4" autoplay loop muted playsinline poster="assets/abyss.jpg"></video>
-
-  <!-- Layer 2: WebGL 3D Bioluminescent Particles -->
+  <!-- Layer 2: WebGL 3D Particle Canvas -->
   <canvas id="webgl-canvas"></canvas>
 
-  <!-- Layer 3: Animated Living Marine Life (Sea Turtle, Fish Schools, Jellyfish) -->
+  <!-- Layer 3: Living Marine Life Canvas (Sea Turtle, Fish, Jellyfish, Bubbles) -->
   <canvas id="marine-canvas"></canvas>
 
-  <!-- Layer 4: Cinematic Vignette -->
+  <!-- Layer 4: Soft Cinematic Vignette -->
   <div class="cinematic-vignette"></div>
 
   <!-- Layer 10: Presentation Stage -->
@@ -693,7 +706,7 @@
 
   <script>
     // ==========================================
-    // 1. ROBUST THREE.JS PARTICLE PHYSICS ENGINE
+    // 1. THREE.JS 3D PARTICLE ENGINE
     // ==========================================
     let particleMaterial = null;
     try {
@@ -706,22 +719,7 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         camera.position.z = 50;
 
-        // Circular soft particle texture
-        const pCanvas = document.createElement('canvas');
-        pCanvas.width = 64; pCanvas.height = 64;
-        const pCtx = pCanvas.getContext('2d');
-        const gradient = pCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(0.3, 'rgba(255,255,255,0.7)');
-        gradient.addColorStop(0.8, 'rgba(255,255,255,0.15)');
-        gradient.addColorStop(1, 'rgba(255,255,255,0)');
-        pCtx.fillStyle = gradient;
-        pCtx.beginPath();
-        pCtx.arc(32, 32, 32, 0, Math.PI * 2);
-        pCtx.fill();
-        const particleTexture = new THREE.CanvasTexture(pCanvas);
-
-        const particleCount = 1200;
+        const particleCount = 1500;
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         const velocities = new Float32Array(particleCount * 3);
@@ -731,21 +729,19 @@
           positions[i + 1] = (Math.random() - 0.5) * 80;
           positions[i + 2] = (Math.random() - 0.5) * 60;
 
-          velocities[i] = (Math.random() - 0.5) * 0.015;
-          velocities[i + 1] = Math.random() * 0.025 + 0.008;
-          velocities[i + 2] = (Math.random() - 0.5) * 0.015;
+          velocities[i] = (Math.random() - 0.5) * 0.02;
+          velocities[i + 1] = Math.random() * 0.03 + 0.01;
+          velocities[i + 2] = (Math.random() - 0.5) * 0.02;
         }
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
         particleMaterial = new THREE.PointsMaterial({
-          size: 2.2,
-          map: particleTexture,
+          size: 1.6,
           color: 0x38bdf8,
           transparent: true,
-          opacity: 0.65,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending
         });
 
         const particles = new THREE.Points(geometry, particleMaterial);
@@ -757,8 +753,8 @@
           mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
         });
 
-        function animateParticles() {
-          requestAnimationFrame(animateParticles);
+        function animate() {
+          requestAnimationFrame(animate);
           const pos = geometry.attributes.position.array;
           for (let i = 0; i < particleCount * 3; i += 3) {
             pos[i] += velocities[i];
@@ -771,13 +767,13 @@
           }
           geometry.attributes.position.needsUpdate = true;
 
-          camera.position.x += (mouseX * 4 - camera.position.x) * 0.04;
-          camera.position.y += (mouseY * 4 - camera.position.y) * 0.04;
+          camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+          camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
           camera.lookAt(scene.position);
 
           renderer.render(scene, camera);
         }
-        animateParticles();
+        animate();
 
         window.addEventListener('resize', () => {
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -786,267 +782,30 @@
         });
       }
     } catch (e) {
-      console.warn('Three.js particle engine fallback:', e);
+      console.warn('Three.js initialization:', e);
     }
 
     // ==========================================
-    // 2. LIVING MARINE LIFE & SEA TURTLE ENGINE
-    // ==========================================
-    const marineCanvas = document.getElementById('marine-canvas');
-    const mCtx = marineCanvas.getContext('2d');
-    const turb = document.getElementById('turbulence');
-
-    function resizeMarineCanvas() {
-      marineCanvas.width = window.innerWidth;
-      marineCanvas.height = window.innerHeight;
-    }
-    resizeMarineCanvas();
-    window.addEventListener('resize', resizeMarineCanvas);
-
-    let waveTime = 0;
-    function animateWaterRipples() {
-      waveTime += 0.008;
-      if (turb) {
-        const freqX = 0.01 + Math.sin(waveTime) * 0.003;
-        const freqY = 0.008 + Math.cos(waveTime * 0.8) * 0.002;
-        turb.setAttribute('baseFrequency', `${freqX.toFixed(5)} ${freqY.toFixed(5)}`);
-      }
-    }
-
-    // 1. School of Fish (Sunlight Zone)
-    const fishCount = 35;
-    const fishSchool = [];
-    for (let i = 0; i < fishCount; i++) {
-      fishSchool.push({
-        x: Math.random() * window.innerWidth,
-        y: 80 + Math.random() * 250,
-        speed: 1.5 + Math.random() * 1.8,
-        length: 8 + Math.random() * 8,
-        wiggle: Math.random() * Math.PI,
-        opacity: 0.35 + Math.random() * 0.45
-      });
-    }
-
-    // 2. The Beloved Emerald Sea Turtle (Coral Zone - media_1788716584928.png)
-    let turtle = {
-      x: -120,
-      y: window.innerHeight * 0.32,
-      speed: 0.75,
-      flipperAngle: 0
-    };
-
-    // 3. Bioluminescent Jellyfish (Abyss Zone)
-    const jellyfishList = [];
-    for (let i = 0; i < 7; i++) {
-      jellyfishList.push({
-        x: 100 + Math.random() * (window.innerWidth - 200),
-        y: window.innerHeight + Math.random() * 300,
-        speed: 0.4 + Math.random() * 0.5,
-        radius: 22 + Math.random() * 18,
-        pulse: Math.random() * Math.PI,
-        glowColor: i % 2 === 0 ? 'rgba(56, 189, 248, ' : 'rgba(168, 85, 247, '
-      });
-    }
-
-    function renderMarineLife() {
-      mCtx.clearRect(0, 0, marineCanvas.width, marineCanvas.height);
-      animateWaterRipples();
-
-      const activeBg = document.querySelector('.bg-layer.active');
-      const isSurface = activeBg && activeBg.id === 'bg-surface';
-      const isCoral = activeBg && activeBg.id === 'bg-coral';
-      const isAbyss = activeBg && activeBg.id === 'bg-abyss';
-
-      // Draw Fish (Surface Zone)
-      if (isSurface) {
-        for (let f of fishSchool) {
-          f.x += f.speed;
-          f.wiggle += 0.2;
-          if (f.x > marineCanvas.width + 50) f.x = -50;
-
-          mCtx.save();
-          mCtx.translate(f.x, f.y + Math.sin(f.wiggle) * 3);
-          mCtx.fillStyle = `rgba(224, 242, 254, ${f.opacity})`;
-          mCtx.beginPath();
-          mCtx.ellipse(0, 0, f.length, f.length * 0.35, 0, 0, Math.PI * 2);
-          mCtx.fill();
-          // Tail
-          mCtx.beginPath();
-          mCtx.moveTo(-f.length * 0.8, 0);
-          mCtx.lineTo(-f.length * 1.3, -f.length * 0.35);
-          mCtx.lineTo(-f.length * 1.3, f.length * 0.35);
-          mCtx.closePath();
-          mCtx.fill();
-          mCtx.restore();
-        }
-      }
-
-      // Draw Sea Turtle (Coral Zone — Exactly as requested in media_1788716584928.png)
-      if (isCoral) {
-        turtle.x += turtle.speed;
-        turtle.flipperAngle += 0.04;
-        if (turtle.x > marineCanvas.width + 220) {
-          turtle.x = -180;
-          turtle.y = marineCanvas.height * (0.2 + Math.random() * 0.3);
-        }
-
-        mCtx.save();
-        mCtx.translate(turtle.x, turtle.y + Math.sin(turtle.flipperAngle * 0.5) * 8);
-        mCtx.fillStyle = 'rgba(16, 185, 129, 0.45)';
-        mCtx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
-        mCtx.lineWidth = 2;
-
-        // Shell
-        mCtx.beginPath();
-        mCtx.ellipse(0, 0, 48, 32, 0.08, 0, Math.PI * 2);
-        mCtx.fill();
-        mCtx.stroke();
-
-        // Shell Pattern Details
-        mCtx.strokeStyle = 'rgba(52, 211, 153, 0.5)';
-        mCtx.lineWidth = 1;
-        mCtx.beginPath();
-        mCtx.arc(0, 0, 18, 0, Math.PI * 2);
-        mCtx.stroke();
-
-        // Head
-        mCtx.fillStyle = 'rgba(16, 185, 129, 0.55)';
-        mCtx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
-        mCtx.lineWidth = 2;
-        mCtx.beginPath();
-        mCtx.ellipse(52, -2, 15, 11, 0.08, 0, Math.PI * 2);
-        mCtx.fill();
-        mCtx.stroke();
-
-        // Front Flippers (Moving rhythmically)
-        const flipperOffset = Math.sin(turtle.flipperAngle) * 16;
-        mCtx.beginPath();
-        mCtx.moveTo(28, -16);
-        mCtx.quadraticCurveTo(48, -48 + flipperOffset, 16, -42 + flipperOffset);
-        mCtx.closePath();
-        mCtx.fill();
-        mCtx.stroke();
-
-        mCtx.beginPath();
-        mCtx.moveTo(28, 16);
-        mCtx.quadraticCurveTo(48, 48 - flipperOffset, 16, 42 - flipperOffset);
-        mCtx.closePath();
-        mCtx.fill();
-        mCtx.stroke();
-
-        // Rear Flippers
-        mCtx.beginPath();
-        mCtx.moveTo(-32, -14);
-        mCtx.quadraticCurveTo(-46, -30, -22, -24);
-        mCtx.closePath();
-        mCtx.fill();
-        mCtx.stroke();
-
-        mCtx.beginPath();
-        mCtx.moveTo(-32, 14);
-        mCtx.quadraticCurveTo(-46, 30, -22, 24);
-        mCtx.closePath();
-        mCtx.fill();
-        mCtx.stroke();
-
-        mCtx.restore();
-      }
-
-      // Draw Bioluminescent Jellyfish (Abyss Zone)
-      if (isAbyss) {
-        for (let j of jellyfishList) {
-          j.pulse += 0.035;
-          const expansion = Math.sin(j.pulse);
-          j.y -= j.speed + (expansion > 0 ? expansion * 0.5 : 0);
-          if (j.y < -120) {
-            j.y = marineCanvas.height + 100;
-            j.x = 80 + Math.random() * (marineCanvas.width - 160);
-          }
-
-          const curRadius = j.radius * (1 + expansion * 0.15);
-          mCtx.save();
-          mCtx.translate(j.x, j.y);
-
-          // Glowing Bell
-          const grad = mCtx.createRadialGradient(0, 0, 0, 0, 0, curRadius * 1.5);
-          grad.addColorStop(0, j.glowColor + '0.6)');
-          grad.addColorStop(0.7, j.glowColor + '0.25)');
-          grad.addColorStop(1, j.glowColor + '0)');
-
-          mCtx.fillStyle = grad;
-          mCtx.beginPath();
-          mCtx.arc(0, 0, curRadius * 1.5, 0, Math.PI * 2);
-          mCtx.fill();
-
-          mCtx.fillStyle = j.glowColor + '0.45)';
-          mCtx.strokeStyle = j.glowColor + '0.8)';
-          mCtx.lineWidth = 1.5;
-          mCtx.beginPath();
-          mCtx.arc(0, 0, curRadius, Math.PI, 0);
-          mCtx.closePath();
-          mCtx.fill();
-          mCtx.stroke();
-
-          // Tentacles
-          mCtx.strokeStyle = j.glowColor + '0.4)';
-          mCtx.lineWidth = 1;
-          for (let t = -curRadius * 0.6; t <= curRadius * 0.6; t += curRadius * 0.4) {
-            mCtx.beginPath();
-            mCtx.moveTo(t, 0);
-            mCtx.bezierCurveTo(
-              t + Math.sin(j.pulse + t) * 8, curRadius * 0.8,
-              t - Math.cos(j.pulse) * 8, curRadius * 1.6,
-              t, curRadius * 2.4
-            );
-            mCtx.stroke();
-          }
-
-          mCtx.restore();
-        }
-      }
-
-      requestAnimationFrame(renderMarineLife);
-    }
-    renderMarineLife();
-
-    // ==========================================
-    // 3. BULLETPROOF SLIDE NAVIGATION & MEDIA
+    // 2. SLIDE NAVIGATION & VISUAL TRANSITIONS
     // ==========================================
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot-btn');
     const bgLayers = document.querySelectorAll('.bg-layer');
-    const allVideos = document.querySelectorAll('.bg-video');
     const depthDisplay = document.getElementById('depth-display');
     const currSlideDisplay = document.getElementById('curr-slide');
     const btnNext = document.getElementById('btn-next');
     const btnPrev = document.getElementById('btn-prev');
-    const btnFullscreen = document.getElementById('btn-fullscreen');
-    const hudBottom = document.querySelector('.hud-bottom');
-
     let currentIndex = 0;
-    let idleTimer = null;
-    let isSimulatedFullscreen = false;
-
-    // Track when video is genuinely playing
-    allVideos.forEach(v => {
-      v.muted = true;
-      v.addEventListener('playing', () => {
-        v.classList.add('playing');
-      });
-      v.play().catch(() => {});
-    });
 
     function updateSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
       currentIndex = index;
 
-      // 1. Toggle Slide DOM
       slides.forEach((s, idx) => {
         s.classList.toggle('active', idx === currentIndex);
       });
 
-      // 2. Toggle Jump Dots
       dots.forEach((d, idx) => {
         d.classList.toggle('active', idx === currentIndex);
       });
@@ -1055,30 +814,10 @@
       if (!activeSlide) return;
 
       const targetBgId = activeSlide.dataset.bg;
-
-      // 3. Switch Background Images (Instant)
       bgLayers.forEach(bg => {
         bg.classList.toggle('active', bg.id === targetBgId);
       });
 
-      // 4. Switch Video Layers
-      const vidMap = {
-        'bg-surface': 'vid-surface',
-        'bg-coral': 'vid-coral',
-        'bg-abyss': 'vid-abyss'
-      };
-      const targetVidId = vidMap[targetBgId];
-
-      allVideos.forEach(v => {
-        if (v.id === targetVidId) {
-          v.classList.add('active');
-          if (v.paused) v.play().catch(() => {});
-        } else {
-          v.classList.remove('active');
-        }
-      });
-
-      // 5. Adjust Particle Luminescence Color
       if (particleMaterial && particleMaterial.color) {
         if (targetBgId === 'bg-surface') {
           particleMaterial.color.setHex(0x38bdf8);
@@ -1089,7 +828,6 @@
         }
       }
 
-      // 6. Update HUD Displays
       if (depthDisplay && activeSlide.dataset.depth) {
         depthDisplay.textContent = `DEPTH: ${activeSlide.dataset.depth.toUpperCase()}`;
       }
@@ -1103,7 +841,6 @@
       resetActivity();
     }
 
-    // Navigation button handlers
     if (btnNext) {
       btnNext.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1124,7 +861,6 @@
       });
     }
 
-    // Keyboard controls
     window.addEventListener('keydown', (e) => {
       resetActivity();
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
@@ -1145,8 +881,13 @@
     });
 
     // ==========================================
-    // 4. FULLSCREEN CONTROLLER & GUARANTEED DIMMING
+    // 3. FULLSCREEN CONTROLLER & GUARANTEED DIMMING
     // ==========================================
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const hudBottom = document.querySelector('.hud-bottom');
+    let idleTimer = null;
+    let isSimulatedFullscreen = false;
+
     function isNativeFullscreen() {
       return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
     }
@@ -1243,13 +984,250 @@
       document.addEventListener(evt, updateFullscreenUI);
     });
 
-    // Autoplay trigger on first click
-    document.addEventListener('click', () => {
-      const activeVid = document.querySelector('.bg-video.active');
-      if (activeVid && activeVid.paused) activeVid.play().catch(() => {});
-    }, { once: true });
+    // ==========================================
+    // 4. LIVING MARINE LIFE & AMBIENT WATER MOTION
+    // ==========================================
+    const marineCanvas = document.getElementById('marine-canvas');
+    const mCtx = marineCanvas ? marineCanvas.getContext('2d') : null;
 
-    // Initialize Slide 1
+    function resizeMarineCanvas() {
+      if (!marineCanvas) return;
+      marineCanvas.width = window.innerWidth;
+      marineCanvas.height = window.innerHeight;
+    }
+    resizeMarineCanvas();
+    window.addEventListener('resize', resizeMarineCanvas);
+
+    // Dynamic Micro-Bubbles
+    const bubbleCount = 45;
+    const bubbles = [];
+    for (let i = 0; i < bubbleCount; i++) {
+      bubbles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        radius: 1.5 + Math.random() * 3.5,
+        speed: 0.6 + Math.random() * 1.2,
+        wobbleSpeed: 0.02 + Math.random() * 0.03,
+        wobbleOffset: Math.random() * Math.PI * 2,
+        opacity: 0.15 + Math.random() * 0.35
+      });
+    }
+
+    // 1. School of Fish (Sunlight Zone)
+    const fishCount = 40;
+    const fishSchool = [];
+    for (let i = 0; i < fishCount; i++) {
+      fishSchool.push({
+        x: Math.random() * window.innerWidth,
+        y: 60 + Math.random() * (window.innerHeight * 0.45),
+        speed: 1.8 + Math.random() * 2.2,
+        length: 12 + Math.random() * 10,
+        wiggle: Math.random() * Math.PI * 2,
+        opacity: 0.4 + Math.random() * 0.5
+      });
+    }
+
+    // 2. Majestic Sea Turtle (Coral Zone - media_1788716584928.png)
+    let turtle = {
+      x: -180,
+      y: window.innerHeight * 0.38,
+      speed: 0.85,
+      flipperAngle: 0
+    };
+
+    // 3. Bioluminescent Jellyfish (Abyss Zone)
+    const jellyfishList = [];
+    for (let i = 0; i < 8; i++) {
+      jellyfishList.push({
+        x: 80 + Math.random() * (window.innerWidth - 160),
+        y: window.innerHeight + Math.random() * 400,
+        speed: 0.45 + Math.random() * 0.5,
+        radius: 24 + Math.random() * 20,
+        pulse: Math.random() * Math.PI * 2,
+        glowColor: i % 2 === 0 ? 'rgba(56, 189, 248, ' : 'rgba(192, 132, 252, '
+      });
+    }
+
+    function renderMarineLife() {
+      if (!mCtx) return;
+      mCtx.clearRect(0, 0, marineCanvas.width, marineCanvas.height);
+
+      const activeBg = document.querySelector('.bg-layer.active');
+      const isSurface = activeBg && activeBg.id === 'bg-surface';
+      const isCoral = activeBg && activeBg.id === 'bg-coral';
+      const isAbyss = activeBg && activeBg.id === 'bg-abyss';
+
+      // Micro-bubbles
+      for (let b of bubbles) {
+        b.y -= b.speed;
+        b.wobbleOffset += b.wobbleSpeed;
+        const curX = b.x + Math.sin(b.wobbleOffset) * 8;
+        if (b.y < -20) {
+          b.y = marineCanvas.height + 20;
+          b.x = Math.random() * marineCanvas.width;
+        }
+
+        mCtx.save();
+        mCtx.beginPath();
+        mCtx.arc(curX, b.y, b.radius, 0, Math.PI * 2);
+        mCtx.fillStyle = `rgba(224, 242, 254, ${b.opacity * 0.4})`;
+        mCtx.fill();
+        mCtx.strokeStyle = `rgba(255, 255, 255, ${b.opacity * 0.8})`;
+        mCtx.lineWidth = 1;
+        mCtx.stroke();
+        mCtx.restore();
+      }
+
+      // 1. Draw Fish School (Surface Zone)
+      if (isSurface) {
+        for (let f of fishSchool) {
+          f.x += f.speed;
+          f.wiggle += 0.22;
+          if (f.x > marineCanvas.width + 60) {
+            f.x = -60;
+            f.y = 60 + Math.random() * (marineCanvas.height * 0.45);
+          }
+
+          mCtx.save();
+          mCtx.translate(f.x, f.y + Math.sin(f.wiggle) * 4);
+          mCtx.fillStyle = `rgba(224, 242, 254, ${f.opacity})`;
+          mCtx.beginPath();
+          mCtx.ellipse(0, 0, f.length, f.length * 0.36, 0, 0, Math.PI * 2);
+          mCtx.fill();
+          mCtx.beginPath();
+          mCtx.moveTo(-f.length * 0.8, 0);
+          mCtx.lineTo(-f.length * 1.4, -f.length * 0.4);
+          mCtx.lineTo(-f.length * 1.4, f.length * 0.4);
+          mCtx.closePath();
+          mCtx.fill();
+          mCtx.restore();
+        }
+      }
+
+      // 2. Draw Sea Turtle (Coral Zone - Exactly as in media_1788716584928.png)
+      if (isCoral) {
+        turtle.x += turtle.speed;
+        turtle.flipperAngle += 0.045;
+        if (turtle.x > marineCanvas.width + 250) {
+          turtle.x = -220;
+          turtle.y = marineCanvas.height * (0.2 + Math.random() * 0.35);
+        }
+
+        mCtx.save();
+        mCtx.translate(turtle.x, turtle.y + Math.sin(turtle.flipperAngle * 0.6) * 10);
+        mCtx.fillStyle = 'rgba(16, 185, 129, 0.55)';
+        mCtx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
+        mCtx.lineWidth = 2.5;
+
+        // Shell (Carapace)
+        mCtx.beginPath();
+        mCtx.ellipse(0, 0, 50, 34, 0.08, 0, Math.PI * 2);
+        mCtx.fill();
+        mCtx.stroke();
+
+        // Shell Patterns
+        mCtx.beginPath();
+        mCtx.ellipse(0, 0, 32, 20, 0.08, 0, Math.PI * 2);
+        mCtx.strokeStyle = 'rgba(110, 231, 183, 0.6)';
+        mCtx.lineWidth = 1.5;
+        mCtx.stroke();
+
+        // Head
+        mCtx.beginPath();
+        mCtx.ellipse(54, -2, 16, 12, 0.08, 0, Math.PI * 2);
+        mCtx.fillStyle = 'rgba(5, 150, 105, 0.7)';
+        mCtx.fill();
+        mCtx.strokeStyle = 'rgba(52, 211, 153, 0.9)';
+        mCtx.stroke();
+
+        // Front Flippers (Moving stroke)
+        const flipperOffset = Math.sin(turtle.flipperAngle) * 18;
+        mCtx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+        mCtx.beginPath();
+        mCtx.moveTo(28, -18);
+        mCtx.quadraticCurveTo(52, -50 + flipperOffset, 18, -45 + flipperOffset);
+        mCtx.closePath();
+        mCtx.fill();
+        mCtx.stroke();
+
+        mCtx.beginPath();
+        mCtx.moveTo(28, 18);
+        mCtx.quadraticCurveTo(52, 50 - flipperOffset, 18, 45 - flipperOffset);
+        mCtx.closePath();
+        mCtx.fill();
+        mCtx.stroke();
+
+        // Rear Flippers
+        mCtx.beginPath();
+        mCtx.ellipse(-38, -18, 14, 8, -0.4, 0, Math.PI * 2);
+        mCtx.fill();
+        mCtx.stroke();
+        mCtx.beginPath();
+        mCtx.ellipse(-38, 18, 14, 8, 0.4, 0, Math.PI * 2);
+        mCtx.fill();
+        mCtx.stroke();
+
+        mCtx.restore();
+      }
+
+      // 3. Draw Bioluminescent Jellyfish (Abyss Zone)
+      if (isAbyss) {
+        for (let j of jellyfishList) {
+          j.pulse += 0.04;
+          const expansion = Math.sin(j.pulse);
+          j.y -= j.speed + (expansion > 0 ? expansion * 0.7 : 0);
+          if (j.y < -150) {
+            j.y = marineCanvas.height + 120;
+            j.x = 80 + Math.random() * (marineCanvas.width - 160);
+          }
+
+          const curRadius = j.radius * (1 + expansion * 0.18);
+          mCtx.save();
+          mCtx.translate(j.x, j.y);
+
+          // Luminous Outer Halo
+          const grad = mCtx.createRadialGradient(0, 0, 0, 0, 0, curRadius * 1.6);
+          grad.addColorStop(0, j.glowColor + '0.65)');
+          grad.addColorStop(0.5, j.glowColor + '0.3)');
+          grad.addColorStop(1, j.glowColor + '0)');
+
+          mCtx.fillStyle = grad;
+          mCtx.beginPath();
+          mCtx.arc(0, 0, curRadius * 1.6, 0, Math.PI * 2);
+          mCtx.fill();
+
+          // Bell Dome
+          mCtx.fillStyle = j.glowColor + '0.45)';
+          mCtx.strokeStyle = j.glowColor + '0.9)';
+          mCtx.lineWidth = 2;
+          mCtx.beginPath();
+          mCtx.arc(0, 0, curRadius, Math.PI, 0);
+          mCtx.closePath();
+          mCtx.fill();
+          mCtx.stroke();
+
+          // Flowing Tentacles
+          mCtx.strokeStyle = j.glowColor + '0.55)';
+          mCtx.lineWidth = 1.5;
+          for (let t = -curRadius * 0.7; t <= curRadius * 0.7; t += curRadius * 0.35) {
+            mCtx.beginPath();
+            mCtx.moveTo(t, 0);
+            mCtx.bezierCurveTo(
+              t + Math.sin(j.pulse + t) * 10, curRadius * 0.9,
+              t - Math.cos(j.pulse) * 10, curRadius * 1.8,
+              t + Math.sin(j.pulse * 0.7) * 6, curRadius * 2.8
+            );
+            mCtx.stroke();
+          }
+
+          mCtx.restore();
+        }
+      }
+
+      requestAnimationFrame(renderMarineLife);
+    }
+    renderMarineLife();
+
     updateSlide(0);
 
   </script>
