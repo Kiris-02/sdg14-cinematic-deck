@@ -1,46 +1,52 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SDG 14: 6-Speaker Live Presentation Portal</title>
+  <title>SDG 14: 6-Speaker Rehearsal Portal (3 Targets x 4 Questions)</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #030712; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 2rem 1rem; }
-    .container { max-width: 900px; margin: 0 auto; }
+    .container { max-width: 960px; margin: 0 auto; }
     
     header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 1.5rem; }
-    h1 { font-size: 2rem; font-weight: 800; color: #38bdf8; margin-bottom: 0.5rem; }
+    h1 { font-size: 2.2rem; font-weight: 800; color: #38bdf8; margin-bottom: 0.5rem; }
     p.meta { color: #94a3b8; font-size: 0.95rem; }
 
     /* Timer Widget */
-    .timer-bar { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 1rem; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .timer-display { font-family: 'Space Grotesk', monospace; font-size: 2rem; font-weight: 700; color: #10b981; }
-    .timer-controls button { background: #0284c7; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-left: 0.5rem; }
+    .timer-bar { background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 1rem; padding: 1.25rem 1.75rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; backdrop-filter: blur(16px); }
+    .timer-display { font-family: 'Space Grotesk', monospace; font-size: 2.2rem; font-weight: 700; color: #10b981; }
+    .timer-controls button { background: #0284c7; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 700; cursor: pointer; margin-left: 0.5rem; transition: background 0.2s ease; }
     .timer-controls button:hover { background: #0369a1; }
+
+    /* Link to Deck */
+    .deck-banner { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 0.75rem; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .deck-banner a { color: #38bdf8; font-weight: 700; text-decoration: none; }
+    .deck-banner a:hover { text-decoration: underline; }
 
     /* Tabs Bar */
     .tabs-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; }
-    .tab-btn { background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
+    .tab-btn { background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 0.8rem 1.25rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
     .tab-btn:hover { background: #1e293b; color: #f8fafc; }
     .tab-btn.active { background: #0284c7; border-color: #38bdf8; color: white; box-shadow: 0 0 15px rgba(2, 132, 199, 0.4); }
 
     /* Tab Content Panes */
-    .tab-pane { display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(16px); border-radius: 1.25rem; padding: 2rem; }
+    .tab-pane { display: none; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(16px); border-radius: 1.25rem; padding: 2.25rem; }
     .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    .role-badge { display: inline-block; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; }
-    .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: #f8fafc; }
-    .script-text { font-size: 1.15rem; line-height: 1.8; color: #e2e8f0; margin-bottom: 1.5rem; }
-    .script-text p { margin-bottom: 1.2rem; }
+    .role-badge { display: inline-block; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 0.35rem 0.9rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; }
+    .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.2rem; color: #f8fafc; }
+    .script-text { font-size: 1.15rem; line-height: 1.85; color: #e2e8f0; margin-bottom: 1.5rem; }
+    .script-text p { margin-bottom: 1.25rem; }
+    .script-cue { color: #38bdf8; font-weight: 700; background: rgba(56, 189, 248, 0.12); padding: 0.2rem 0.6rem; border-radius: 0.25rem; }
 
-    .callout { background: rgba(2, 132, 199, 0.1); border-left: 4px solid #0284c7; padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .callout { background: rgba(2, 132, 199, 0.1); border-left: 4px solid #0284c7; padding: 1rem 1.25rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1.5rem; font-size: 0.95rem; }
     .callout strong { color: #38bdf8; }
     
-    .handoff-box { background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); border-radius: 0.75rem; padding: 1rem; margin-top: 1.5rem; }
+    .handoff-box { background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); border-radius: 0.75rem; padding: 1.25rem; margin-top: 1.5rem; }
     .handoff-box strong { color: #fb7185; }
   </style>
 </head>
@@ -48,13 +54,18 @@
   <div class="container">
     <header>
       <h1>🌊 SDG 14: Life Below Water</h1>
-      <p class="meta">6-Speaker Live Rehearsal Portal • Account: skrongdattv1@gmail.com • 15 Minutes Total</p>
+      <p class="meta">Official 6-Speaker Live Presentation Rehearsal Portal • 15 Minutes Total (02:30 per Speaker)</p>
     </header>
+
+    <div class="deck-banner">
+      <span>🖥️ Live Presentation Deck:</span>
+      <a href="index.html" target="_blank">Open Fullscreen Cinematic Deck →</a>
+    </div>
 
     <!-- Stopwatch -->
     <div class="timer-bar">
       <div>
-        <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase;">Speaker Stopwatch (2:30 Target)</div>
+        <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase;">Speaker Stopwatch (02:30 Target)</div>
         <div class="timer-display" id="timer">02:30</div>
       </div>
       <div class="timer-controls">
@@ -66,190 +77,209 @@
 
     <!-- Tabs Navigation -->
     <nav class="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab(0)">Tab 1: Speaker 1</button>
-      <button class="tab-btn" onclick="switchTab(1)">Tab 2: Speaker 2</button>
-      <button class="tab-btn" onclick="switchTab(2)">Tab 3: Speaker 3</button>
-      <button class="tab-btn" onclick="switchTab(3)">Tab 4: Speaker 4</button>
-      <button class="tab-btn" onclick="switchTab(4)">Tab 5: Speaker 5</button>
-      <button class="tab-btn" onclick="switchTab(5)">Tab 6: Speaker 6</button>
+      <button class="tab-btn active" onclick="switchTab(0)">Speaker 1 (Slides 1 & 2)</button>
+      <button class="tab-btn" onclick="switchTab(1)">Speaker 2 (Slides 3 & 4)</button>
+      <button class="tab-btn" onclick="switchTab(2)">Speaker 3 (Slides 5 & 6)</button>
+      <button class="tab-btn" onclick="switchTab(3)">Speaker 4 (Slides 7 & 8)</button>
+      <button class="tab-btn" onclick="switchTab(4)">Speaker 5 (Slides 9 & 10)</button>
+      <button class="tab-btn" onclick="switchTab(5)">Speaker 6 (Slides 11 & 12)</button>
     </nav>
 
     <!-- Tab 1: Speaker 1 -->
     <div class="tab-pane active">
-      <span class="role-badge">Speaker 1 • 00:00 to 02:30 • Slides 1 & 2</span>
-      <h2 class="section-title">The Big Picture & The Causal Chain of Risk</h2>
+      <span class="role-badge">Speaker 1 • 00:00 to 02:30 • Target 14.1 Aim & Indicators</span>
+      <h2 class="section-title">Target 14.1: Aim & Indicator 14.1.1 Pathways</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Ecosystem [EE-koh-sis-tuhm] | Indicator [IN-dih-kay-ter] | Acidification [uh-sid-uh-fuh-KAY-shun]
+        <strong>Pronunciation Guide:</strong> Eutrophication [yoo-truh-fuh-KAY-shun] | Phosphorus [FOS-fuh-ruhs] | Hypoxic [hy-POK-sik]
       </div>
       <div class="script-text">
-        <p>Good morning, professor and fellow classmates. Today, our team is presenting United Nations Sustainable Development Goal 14: Life Below Water.</p>
-        <p>The ocean generates over 50 percent of the oxygen we breathe, absorbs a quarter of all global carbon dioxide emissions, and directly sustains the livelihoods of over three billion human beings. Yet today, marine systems face unprecedented ecological disruption.</p>
-        <p>Our team focuses on three foundational targets: Target 14.1 on Marine Pollution; Target 14.2 on Ecosystem Resilience; and Target 14.3 on Ocean Acidification.</p>
-        <p>For each target, we systematically address four non-negotiable questions: First, what does the target aim to achieve? Second, what official indicators monitor global progress? Third, how are these indicators measured scientifically? And fourth, what international institutions and governance treaties enforce compliance?</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 2]</em></p>
-        <p>Before diving into each target individually, look at how they connect. They do not operate in silos; they form an unbroken causal chain of risk.</p>
-        <p>It starts upstream under Target 14.1: agricultural fertilizers and city plastics exert massive pressure on coastal waters. That pressure travels into Target 14.2, where fragile coral reefs and mangrove nurseries suffer habitat degradation. And simultaneously, Target 14.3 monitors global ocean chemistry as excess atmospheric CO2 permanently alters the pH balance of the entire water column.</p>
+        <p><span class="script-cue">[ON SLIDE 01 — TARGET 14.1 AIM]</span></p>
+        <p>Good morning, professor and fellow classmates. Today, our team is presenting United Nations Sustainable Development Goal 14: Life Below Water. Our study is built upon a rigorous matrix: three foundational targets examined across four essential questions.</p>
+        <p>I begin with Target 14.1: Marine Pollution. Question 1 asks: What does this target aim to achieve?</p>
+        <p>The official UN mandate is unequivocal: by 2025, prevent and significantly reduce marine pollution of all kinds, in particular from land-based activities. Notice two vital dimensions: First, up to 80 percent of all marine litter originates inland—carried by river basins from agricultural runoff and municipal solid waste. Second, 2025 was the original deadline, meaning global implementation is operating under severe time pressure.</p>
+        
+        <p><span class="script-cue">[ADVANCE TO SLIDE 02 — INDICATOR 14.1.1]</span></p>
+        <p>Question 2: What official indicators track this progress?</p>
+        <p>The UN designated Indicator 14.1.1, split into two complementary monitoring pathways. Sub-indicator 14.1.1(a) is the Index of Coastal Eutrophication Potential, or ICEP. It tracks invisible chemical pollution—specifically nitrogen and phosphorus fertilizers. When excess nutrients wash into coastal waters, they spark massive algal blooms that consume dissolved oxygen, resulting in over 500 oceanic dead zones worldwide.</p>
+        <p>Sub-indicator 14.1.1(b) is Plastic Debris Density, measuring both floating macro- and micro-plastics in surface waters and solid waste accumulation per kilometer of coastline.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "To understand the first line of defense, I now pass the floor to Speaker 2 to break down Target 14.1."
+        <strong>🤝 Handoff Cue:</strong> "Speaker 2 will now explain how scientists measure this pollution from space and how international treaties govern it."
       </div>
     </div>
 
     <!-- Tab 2: Speaker 2 -->
     <div class="tab-pane">
-      <span class="role-badge">Speaker 2 • 02:30 to 05:00 • Slides 3 & 4</span>
-      <h2 class="section-title">Target 14.1 & The Dual Indicators</h2>
+      <span class="role-badge">Speaker 2 • 02:30 to 05:00 • Target 14.1 Measurement & Governance</span>
+      <h2 class="section-title">Target 14.1: Scientific Measurement & Global Governance</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Eutrophication [yoo-truh-fuh-KAY-shun] | Phosphorus [FOS-fuh-ruhs] | Debris [duh-BREE]
+        <strong>Pronunciation Guide:</strong> Chlorophyll [KLOR-uh-fil] | Transects [TRAN-sekts] | Custodian [kuh-STOH-dee-uhn]
       </div>
       <div class="script-text">
+        <p><span class="script-cue">[ON SLIDE 03 — MEASUREMENT 14.1]</span></p>
         <p>Thank you, Speaker 1. Hello everyone, I am Speaker 2.</p>
-        <p>Target 14.1 is the frontline defense of marine conservation. Its official mandate is clear: by 2025, prevent and significantly reduce marine pollution of all kinds, in particular from land-based activities.</p>
-        <p>Notice two critical facts here: First, up to 80 percent of all marine litter and pollution originates on dry land—through agricultural fertilizer runoff, untreated municipal wastewater, and mismanaged municipal solid waste flowing into river basins. Second, the official target deadline was set for 2025. That means we are already operating past the original timeline, making accelerated monitoring vital.</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 4]</em></p>
-        <p>To monitor Target 14.1, the United Nations established Indicator 14.1.1, split into two distinct pathways.</p>
-        <p>Sub-indicator 14.1.1(a) is the Index of Coastal Eutrophication, or ICEP. This monitors invisible chemical pollution—specifically nitrogen and phosphorus from fertilizers. When excess nutrients wash into coastal seas, they cause catastrophic algal blooms that suck oxygen out of the water, creating suffocating dead zones.</p>
-        <p>Sub-indicator 14.1.1(b) is Plastic Debris Density. This monitors solid waste accumulation across two realms: floating macro- and micro-plastics in surface waters, and plastic trash accumulating along shorelines.</p>
+        <p>Question 3 asks: How is marine pollution measured scientifically?</p>
+        <p>Tracking pollution across millions of square kilometers requires orbital remote sensing paired with shoreline surveys. For coastal eutrophication, ESA’s Sentinel-3 and NASA’s MODIS satellites scan ocean surface reflectance to detect Chlorophyll-a anomalies. When chlorophyll concentrations surge above normal baselines, algorithms flag active algal blooms.</p>
+        <p>For plastics, scientists use two methodologies: surface manta trawl nets with 333-micrometer mesh to capture floating microplastics, and standardized 100-meter shoreline transects where researchers categorize, count, and weigh litter deposits per square meter.</p>
+
+        <p><span class="script-cue">[ADVANCE TO SLIDE 04 — GOVERNANCE 14.1]</span></p>
+        <p>Question 4: What institutions and governance frameworks enforce compliance?</p>
+        <p>The official global custodian agency is the United Nations Environment Programme (UNEP). UNEP standardizes national data reporting and methodologies across member states.</p>
+        <p>On the legal front, the most critical breakthrough is the Intergovernmental Negotiating Committee (INC) Global Plastics Treaty—mandated to become a legally binding international treaty addressing the full lifecycle of plastics. At sea, MARPOL Annex V under the International Maritime Organization strictly prohibits commercial vessels from discharging any plastics into the marine environment.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "Speaker 3 will now walk us through how satellites and beach surveys turn these indicators into concrete global data."
+        <strong>🤝 Handoff Cue:</strong> "I now pass the floor to Speaker 3 to dive into Target 14.2 on living coastal ecosystems."
       </div>
     </div>
 
     <!-- Tab 3: Speaker 3 -->
     <div class="tab-pane">
-      <span class="role-badge">Speaker 3 • 05:00 to 07:30 • Slides 5 & 6</span>
-      <h2 class="section-title">Scientific Measurement & Governance of 14.1</h2>
+      <span class="role-badge">Speaker 3 • 05:00 to 07:30 • Target 14.2 Aim & Indicators</span>
+      <h2 class="section-title">Target 14.2: Ecosystem Resilience & Indicator Limitations</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Chlorophyll [KLOR-uh-fil] | Transects [TRAN-sekts] | Custodian [kuh-STOH-dee-uhn]
+        <strong>Pronunciation Guide:</strong> Resilience [rih-ZIL-yuhnss] | Ecosystem-based [EE-koh-sis-tuhm bayst] | Spatial [SPAY-shuhl]
       </div>
       <div class="script-text">
+        <p><span class="script-cue">[ON SLIDE 05 — TARGET 14.2 AIM]</span></p>
         <p>Thank you, Speaker 2. Hello everyone, I am Speaker 3.</p>
-        <p>Measuring pollution across hundreds of millions of square miles of open ocean requires two complementary scientific techniques.</p>
-        <p>For coastal eutrophication, marine scientists use satellite remote sensing. NASA’s MODIS and the European Space Agency’s Sentinel-3 satellites continuously scan ocean surface color from orbit. They calculate Chlorophyll-a concentration anomalies. When chlorophyll levels spike far above the historical baseline, it proves that agricultural nutrient pollution has triggered an abnormal algal bloom.</p>
-        <p>For plastic debris density, scientists use standardized 100-meter beach transects and manta trawl surface nets. Citizen science groups and environmental agencies count, weigh, and categorize every plastic item along designated 100-meter strips of shoreline.</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 6]</em></p>
-        <p>Now, who governs Target 14.1? The United Nations Environment Programme, or UNEP, serves as the official global custodian agency. UNEP standardizes country reporting and aggregates national data.</p>
-        <p>At the international policy level, the most important breakthrough is the ongoing negotiation of the Intergovernmental Negotiating Committee—the INC Global Plastics Treaty. This treaty aims to establish a legally binding international instrument addressing the full lifecycle of plastics, from chemical design to marine leakage.</p>
+        <p>We now transition to Target 14.2: Marine Ecosystem Resilience. Question 1: What is the aim?</p>
+        <p>The mandate requires countries to sustainably manage and protect marine and coastal ecosystems to avoid significant adverse impacts, including by strengthening their resilience and taking action for their restoration. The core principle is Ecosystem-Based Management (EBM). Historically, humans managed oceans in silos: fisheries departments regulated fish, while transport ministries regulated shipping. EBM breaks these silos down, managing corals, seagrass meadows, mangroves, and fishing as one interconnected biological web.</p>
+
+        <p><span class="script-cue">[ADVANCE TO SLIDE 06 — INDICATOR 14.2.1]</span></p>
+        <p>Question 2: What is the official indicator?</p>
+        <p>The UN established Indicator 14.2.1: the number of countries using ecosystem-based approaches to manage marine areas. Governments report whether they have established Marine Spatial Planning (MSP) and Integrated Coastal Zone Management (ICZM) frameworks.</p>
+        <p>However, our team highlights a major analytical limitation: Indicator 14.2.1 is a process indicator, not an outcome metric. It records whether a government enacted a management law on paper. It does not verify whether coral cover grew, whether fish biomass recovered, or whether patrol boats stop illegal trawling. This creates the acute risk of 'paper parks'—zones protected on maps but neglected in reality.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "I now hand over to Speaker 4 to examine marine ecosystem resilience and Target 14.2."
+        <strong>🤝 Handoff Cue:</strong> "Speaker 4 will now examine how scientists audit real marine ecology and the global treaties enforcing 14.2."
       </div>
     </div>
 
     <!-- Tab 4: Speaker 4 -->
     <div class="tab-pane">
-      <span class="role-badge">Speaker 4 • 07:30 to 10:00 • Slides 7 & 8</span>
-      <h2 class="section-title">Target 14.2: Ecosystem Resilience & The Policy Blindspot</h2>
+      <span class="role-badge">Speaker 4 • 07:30 to 10:00 • Target 14.2 Measurement & Governance</span>
+      <h2 class="section-title">Target 14.2: Biological Auditing & 30x30 Treaties</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Resilience [rih-ZIL-yuhnss] | Biomass [BY-oh-mass] | Ecosystem-based [EE-koh-sis-tuhm bayst]
+        <strong>Pronunciation Guide:</strong> Kunming-Montreal [Koon-ming Mon-tree-AWL] | Bathymetry [buh-THIM-uh-tree] | Genomics [juh-NOH-miks]
       </div>
       <div class="script-text">
+        <p><span class="script-cue">[ON SLIDE 07 — MEASUREMENT 14.2]</span></p>
         <p>Thank you, Speaker 3. Hello everyone, I am Speaker 4.</p>
-        <p>Target 14.2 shifts our focus from waste management to living ecological resilience. Its mandate is to sustainably manage and protect marine and coastal ecosystems to avoid significant adverse impacts, and take action for their restoration.</p>
-        <p>The core philosophy of Target 14.2 is Ecosystem-Based Management, or EBM. Historically, humans managed oceans in isolated silos: fishing ministries regulated fish, transport ministries regulated shipping, and energy departments leased offshore oil. EBM breaks down these silos. It recognizes that corals, seagrasses, mangroves, fish stocks, and human coastal economies are all part of one interconnected living web.</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 8]</em></p>
-        <p>To monitor progress, the UN established Indicator 14.2.1: the number of countries using ecosystem-based approaches to manage marine areas.</p>
-        <p>Measurement is conducted through national self-reporting surveys verified by UNEP. Countries receive credit if they enact legally recognized Marine Spatial Plans and establish Marine Protected Areas.</p>
-        <p>However, our team must highlight a critical analytical limitation: Indicator 14.2.1 is a process indicator, not an outcome indicator. It measures whether a government passed a planning policy on paper. It does not prove whether coral cover increased, whether fish biomass recovered, or whether enforcement actually stops illegal bottom trawling. Many designated zones risk remaining 'paper parks'.</p>
+        <p>Question 3: How do scientists measure real ecological health beyond paperwork?</p>
+        <p>Marine biologists deploy three direct empirical techniques: First, the Global Coral Reef Monitoring Network (GCRMN) conducts standardized scuba transects to measure hard coral cover, structural rugosity, and bleaching mortality.</p>
+        <p>Second, environmental DNA (eDNA) sampling allows scientists to filter a liter of seawater and sequence genetic traces shed by marine organisms, auditing entire fish populations without destructive netting. Third, multibeam sonar bathymetry and airborne LiDAR map the exact boundaries and density of seagrass meadows and mangrove roots.</p>
+
+        <p><span class="script-cue">[ADVANCE TO SLIDE 08 — GOVERNANCE 14.2]</span></p>
+        <p>Question 4: What global governance frameworks enforce Target 14.2?</p>
+        <p>Target 14.2 is driven by two landmark international accords. First is the Kunming-Montreal Global Biodiversity Framework, specifically Target 3—the '30 by 30' commitment, where 190 nations pledged to protect 30 percent of marine and coastal domains by 2030.</p>
+        <p>Second is the historic BBNJ Treaty—Biodiversity Beyond National Jurisdiction. For the first time in legal history, the international community possesses a binding mechanism to establish and enforce Marine Protected Areas in international waters—the High Seas—which cover two-thirds of the global ocean.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "Speaker 5 will now explore the global treaties governing 14.2 and introduce the chemistry of Target 14.3."
+        <strong>🤝 Handoff Cue:</strong> "I now hand over to Speaker 5 to investigate Target 14.3 and the invisible chemical crisis of ocean acidification."
       </div>
     </div>
 
     <!-- Tab 5: Speaker 5 -->
     <div class="tab-pane">
-      <span class="role-badge">Speaker 5 • 10:00 to 12:30 • Slides 9 & 10</span>
-      <h2 class="section-title">Global Treaties & Target 14.3 Ocean Acidification</h2>
+      <span class="role-badge">Speaker 5 • 10:00 to 12:30 • Target 14.3 Aim & Indicators</span>
+      <h2 class="section-title">Target 14.3: The Acidification Crisis & Indicator 14.3.1</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Kunming-Montreal [Koon-ming Mon-tree-AWL] | Logarithmic [log-uh-RITH-mik] | Pteropods [TEH-ruh-pods]
+        <strong>Pronunciation Guide:</strong> Acidification [uh-sid-uh-fuh-KAY-shun] | Logarithmic [log-uh-RITH-mik] | Aragonite [uh-RAG-uh-nyte]
       </div>
       <div class="script-text">
+        <p><span class="script-cue">[ON SLIDE 09 — TARGET 14.3 AIM]</span></p>
         <p>Thank you, Speaker 4. Hello everyone, I am Speaker 5.</p>
-        <p>Target 14.2 is anchored by the historic Kunming-Montreal Global Biodiversity Framework, specifically Target 3—widely known as the '30 by 30' commitment. Over 190 countries have pledged to effectively conserve at least 30 percent of coastal and marine areas by the year 2030.</p>
-        <p>Equally historic is the newly adopted BBNJ Treaty—the Biodiversity Beyond National Jurisdiction treaty. For the first time in human history, the international community has a legal mechanism to designate high-seas marine protected areas in international waters outside any single country's jurisdiction.</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 10]</em></p>
-        <p>Now, we descend into the profound chemical shift of Target 14.3: Ocean Acidification.</p>
-        <p>The ocean has acted as humanity's greatest climate buffer, absorbing roughly 25 percent of all atmospheric carbon dioxide emissions every year. But that protection comes at an immense chemical price. When CO2 dissolves in seawater, it forms carbonic acid, releasing hydrogen ions.</p>
-        <p>Since the pre-industrial era, surface ocean pH has dropped by approximately 0.1 units. Because pH is logarithmic, a 0.1 drop represents a 30 percent surge in acidity. Seawater is not turning into vinegar—it remains alkaline—but this drop strips away the carbonate ions that corals, oysters, pteropods, and shellfish need to build their skeletons.</p>
+        <p>We descend into Target 14.3: Ocean Acidification. Question 1: What is the aim?</p>
+        <p>The mandate requires humanity to minimize and address the impacts of ocean acidification, including through enhanced scientific cooperation at all levels. The ocean has served as Earth's primary climate shield, absorbing roughly 25 percent of all human-generated CO2 emissions. But this protection carries a grave chemical cost.</p>
+        <p>When CO2 dissolves in seawater, it forms carbonic acid, releasing hydrogen ions. Since the industrial revolution, surface ocean pH has declined by 0.1 units. Because pH is on a logarithmic scale, a 0.1 decline represents a 30 percent surge in hydrogen ion acidity, stripping away the carbonate ions that shellfish, pteropods, and corals require to construct their protective shells.</p>
+
+        <p><span class="script-cue">[ADVANCE TO SLIDE 10 — INDICATOR 14.3.1]</span></p>
+        <p>Question 2: What is the official indicator?</p>
+        <p>The UN designated Indicator 14.3.1: Average marine acidity (pH) measured at an agreed suite of representative sampling stations. Measuring pH requires extraordinary scientific precision—down to 0.002 pH units on the 'Total pH scale' (pHT).</p>
+        <p>Crucially, UN metadata mandates that pH must be reported alongside at least one co-parameter: Total Dissolved Inorganic Carbon (DIC) or Total Alkalinity. This enables calculation of the Aragonite Saturation State (Omega), determining the exact threshold where seawater transitions from nourishing shells to actively corroding them.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "I now hand over to Speaker 6 to conclude with the precision measurement of Target 14.3 and our final synthesis."
+        <strong>🤝 Handoff Cue:</strong> "Speaker 6 will now conclude with autonomous robotic sensors, UNESCO governance, and our team's final synthesis."
       </div>
     </div>
 
     <!-- Tab 6: Speaker 6 -->
     <div class="tab-pane">
-      <span class="role-badge">Speaker 6 • 12:30 to 15:00 • Slides 11 & 12</span>
-      <h2 class="section-title">Precision Sensors, UNESCO & Final Synthesis</h2>
+      <span class="role-badge">Speaker 6 • 12:30 to 15:00 • Target 14.3 Measurement, Governance & Synthesis</span>
+      <h2 class="section-title">Target 14.3: Robotic Measurement, UNESCO & Final Synthesis</h2>
       <div class="callout">
-        <strong>Pronunciation Guide:</strong> Spectrophotometric [spek-troh-foh-toh-MET-rik] | Intergovernmental [in-ter-guh-vern-MEN-tuhl] | Alkalinity [al-kuh-LIN-uh-tee]
+        <strong>Pronunciation Guide:</strong> Spectrophotometric [spek-troh-foh-toh-MET-rik] | Intergovernmental [in-ter-guh-vern-MEN-tuhl] | Synthesis [SIN-thuh-sis]
       </div>
       <div class="script-text">
-        <p>Thank you, Speaker 5. Hello everyone, I am Speaker 6, and I will deliver our final synthesis.</p>
-        <p>Target 14.3 is tracked through Indicator 14.3.1: Average marine acidity measured at representative sampling stations. Measuring ocean acidity is far more complex than dipping litmus paper into water. Seawater pH naturally fluctuates with depth, temperature, water currents, and seasonal plankton blooms.</p>
-        <p>Under UN metadata, measurement must be conducted on the 'Total pH scale' alongside at least one other carbon parameter, such as Total Dissolved Inorganic Carbon or Total Alkalinity. Scientists deploy high-precision glass electrodes and spectrophotometric sensors mounted on autonomous ocean gliders, deep moorings, and Biogeochemical ARGO robotic floats through the Global Ocean Acidification Observing Network, or GOA-ON.</p>
-        <p><em>[PAUSE — ADVANCE TO SLIDE 12]</em></p>
-        <p>Who governs Target 14.3? The official global custodian agency is UNESCO’s Intergovernmental Oceanographic Commission, or UNESCO-IOC. UNESCO-IOC coordinates global ocean observations and publishes the global progress reports.</p>
-        <p>The biggest operational challenge is the geographic data gap. Wealthy developed nations maintain hundreds of autonomous sensor stations, while small island developing states—who depend most heavily on coral reefs for survival—often have zero continuous monitoring buoys. Under the UN Decade of Ocean Science, UNESCO is distributing low-cost monitoring kits called 'Ocean Acidification in a Box' to bridge this divide.</p>
-        <p>In conclusion: SDG 14 teaches us that the ocean is one continuous, interconnected planetary system. Land pollution under 14.1, ecosystem resilience under 14.2, and ocean chemistry under 14.3 cannot be solved separately. Stopping plastic at the source, enforcing the 30x30 reserves, and slashing greenhouse gas emissions are three parts of a single mission: preserving life below water.</p>
+        <p><span class="script-cue">[ON SLIDE 11 — MEASUREMENT 14.3]</span></p>
+        <p>Thank you, Speaker 5. Hello everyone, I am Speaker 6, and I will deliver our final section and synthesis.</p>
+        <p>Question 3: How is ocean acidity measured scientifically?</p>
+        <p>Because ocean pH fluctuates with depth, temperature, and seasonal biology, scientists cannot rely on simple spot checks. Measurement is executed through the Global Ocean Acidification Observing Network (GOA-ON).</p>
+        <p>Key technologies include autonomous Biogeochemical Argo profiling floats (BGC-Argo) that dive to 2,000 meters measuring pH with ion-sensitive field-effect transistors (ISFET), fixed deep-sea ocean moorings, and automated spectrophotometry using purified m-Cresol purple dye aboard oceanographic research vessels.</p>
+
+        <p><span class="script-cue">[ADVANCE TO SLIDE 12 — GOVERNANCE 14.3 & SYNTHESIS]</span></p>
+        <p>Question 4: Who governs Target 14.3 and what is the final synthesis?</p>
+        <p>The custodian agency is UNESCO’s Intergovernmental Oceanographic Commission (IOC-UNESCO). IOC coordinates GOA-ON and maintains the global data repository. A major focus is resolving global equity: Small Island Developing States (SIDS) face the highest vulnerability but have historically had the fewest monitoring buoys. Through the UN Ocean Decade, UNESCO deploys 'Ocean Acidification in a Box' low-cost testing kits to close this gap.</p>
+        <p>To conclude: SDG 14 demonstrates that the ocean is one indivisible planetary life-support system. Land-based pollution under 14.1, habitat resilience under 14.2, and ocean chemistry under 14.3 are deeply intertwined. Halting plastic and fertilizer runoff, enforcing the 30x30 marine reserves, and slashing greenhouse gas emissions under the Paris Agreement are not separate goals—they are three pillars of one unified mission: protecting life below water.</p>
       </div>
       <div class="handoff-box">
-        <strong>🤝 Handoff Cue:</strong> "Thank you very much for your attention. Our team is now delighted to take your questions."
+        <strong>🤝 Handoff Cue:</strong> "Thank you for your attention. Our team is now delighted to take any questions from the class."
       </div>
     </div>
+
   </div>
 
   <script>
     function switchTab(index) {
-      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-        btn.classList.toggle('active', idx === index);
-      });
-      document.querySelectorAll('.tab-pane').forEach((pane, idx) => {
-        pane.classList.toggle('active', idx === index);
-      });
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panes = document.querySelectorAll('.tab-pane');
+      tabs.forEach((t, i) => t.classList.toggle('active', i === index));
+      panes.forEach((p, i) => p.classList.toggle('active', i === index));
+      resetTimer();
     }
 
-    // Stopwatch Logic
-    let timeLeft = 150; // 2 mins 30 secs
-    let timerId = null;
+    // Stopwatch logic
+    let totalSeconds = 150;
+    let timerInterval = null;
     const timerDisplay = document.getElementById('timer');
 
-    function updateTimer() {
-      const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-      const secs = String(timeLeft % 60).padStart(2, '0');
-      timerDisplay.textContent = `${mins}:${secs}`;
-      if (timeLeft <= 20) {
-        timerDisplay.style.color = '#ef4444'; // Red warning
+    function updateTimerDisplay() {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      if (totalSeconds <= 30) {
+        timerDisplay.style.color = '#fb7185';
       } else {
         timerDisplay.style.color = '#10b981';
-      }
-      if (timeLeft > 0) {
-        timeLeft--;
-      } else {
-        clearInterval(timerId);
-        timerId = null;
       }
     }
 
     document.getElementById('btn-start').addEventListener('click', () => {
-      if (!timerId) {
-        timerId = setInterval(updateTimer, 1000);
-      }
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (totalSeconds > 0) {
+          totalSeconds--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }, 1000);
     });
 
     document.getElementById('btn-pause').addEventListener('click', () => {
-      clearInterval(timerId);
-      timerId = null;
+      clearInterval(timerInterval);
+      timerInterval = null;
     });
 
-    document.getElementById('btn-reset').addEventListener('click', () => {
-      clearInterval(timerId);
-      timerId = null;
-      timeLeft = 150;
-      updateTimer();
-    });
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      totalSeconds = 150;
+      updateTimerDisplay();
+    }
+
+    document.getElementById('btn-reset').addEventListener('click', resetTimer);
   </script>
 </body>
 </html>
