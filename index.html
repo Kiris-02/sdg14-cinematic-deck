@@ -610,9 +610,9 @@
 
     <!-- Floating Edit Mode Toolbar -->
     <div id="edit-toolbar" class="edit-toolbar hidden">
-      <span class="edit-toolbar-title">✏️ Chế độ sửa: Click trực tiếp vào chữ để gõ</span>
+      <span class="edit-toolbar-title">✏️ Chế độ sửa: Click vào chữ để gõ • Tự động đồng bộ Đám mây ☁️</span>
       <div class="edit-toolbar-actions">
-        <button id="btn-save-edits" class="btn-tb btn-tb-save">💾 Lưu thay đổi</button>
+        <button id="btn-save-edits" class="btn-tb btn-tb-save">☁️ Lưu & Đồng bộ cả nhóm</button>
         <button id="btn-download-html" class="btn-tb">📥 Tải file HTML mới</button>
         <button id="btn-copy-json" class="btn-tb">📋 Sao chép dữ liệu</button>
         <button id="btn-reset-edits" class="btn-tb btn-tb-danger">🔄 Khôi phục gốc</button>
@@ -1282,61 +1282,113 @@
       return data;
     }
 
-    function saveEdits() {
-      const data = extractSlidesData();
+    const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a067127101a07bbdbd8134df';
+
+    async function syncToCloud(data) {
       try {
-        localStorage.setItem('sdg14_slides_custom_data', JSON.stringify(data));
-        showToast('💾 Đã lưu thay đổi vào trình duyệt thành công! Khi tải lại trang nội dung vẫn giữ nguyên.');
+        const res = await fetch(CLOUD_SYNC_ENDPOINT, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'SDG14 Slides Sync',
+            data: { slides: data, updatedAt: new Date().toISOString() }
+          })
+        });
+        return res.ok;
       } catch (e) {
-        console.error('Lỗi khi lưu localStorage:', e);
-        showToast('⚠️ Không thể lưu vào bộ nhớ trình duyệt.');
+        console.warn('Cloud sync error:', e);
+        return false;
       }
     }
 
-    function applySavedEdits() {
-      const saved = localStorage.getItem('sdg14_slides_custom_data');
-      if (!saved) return;
+    async function fetchFromCloud() {
       try {
-        const data = JSON.parse(saved);
-        const slidesList = document.querySelectorAll('.slide');
-        data.forEach(item => {
-          const sIdx = item.num - 1;
-          const slideEl = slidesList[sIdx];
-          if (!slideEl) return;
-          if (item.target) {
-            const el = slideEl.querySelector('.pill-target');
-            if (el) el.innerText = item.target;
+        const res = await fetch(CLOUD_SYNC_ENDPOINT + '?_t=' + Date.now());
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.data && json.data.slides && json.data.slides.length > 0) {
+            return json.data.slides;
           }
-          if (item.question) {
-            const el = slideEl.querySelector('.pill-question');
-            if (el) el.innerText = item.question;
-          }
-          if (item.speaker) {
-            const el = slideEl.querySelector('.pill-speaker');
-            if (el) el.innerText = item.speaker;
-          }
-          if (item.title) {
-            const el = slideEl.querySelector('.slide-title');
-            if (el) el.innerText = item.title;
-          }
-          if (item.subtitle) {
-            const el = slideEl.querySelector('.slide-subtitle');
-            if (el) el.innerText = item.subtitle;
-          }
-          if (item.cards) {
-            const cardEls = slideEl.querySelectorAll('.metric-card');
-            item.cards.forEach((c, cIdx) => {
-              if (cardEls[cIdx]) {
-                if (c.label) cardEls[cIdx].querySelector('.card-label').innerText = c.label;
-                if (c.stat) cardEls[cIdx].querySelector('.card-stat').innerText = c.stat;
-                if (c.desc) cardEls[cIdx].querySelector('.card-desc').innerText = c.desc;
-              }
-            });
-          }
-        });
-        console.log('Restored custom slide edits from localStorage');
+        }
       } catch (e) {
-        console.error('Could not apply saved edits:', e);
+        console.warn('Cloud fetch error:', e);
+      }
+      return null;
+    }
+
+    async function saveEdits() {
+      const data = extractSlidesData();
+      // 1. Save locally for instant persistence
+      try {
+        localStorage.setItem('sdg14_slides_custom_data', JSON.stringify(data));
+      } catch (e) {}
+
+      showToast('☁️ Đang đồng bộ lên đám mây cho cả nhóm...');
+      
+      // 2. Sync to Cloud
+      const cloudSuccess = await syncToCloud(data);
+      if (cloudSuccess) {
+        showToast('✅ Đã lưu & Đồng bộ lên Đám mây! Bất kỳ ai trong nhóm mở link đều thấy nội dung mới.');
+      } else {
+        showToast('💾 Đã lưu cục bộ trên máy! (Lỗi kết nối đám mây, hãy thử lại).');
+      }
+    }
+
+    function renderDataToDOM(data) {
+      if (!data || !data.length) return;
+      const slidesList = document.querySelectorAll('.slide');
+      data.forEach(item => {
+        const sIdx = item.num - 1;
+        const slideEl = slidesList[sIdx];
+        if (!slideEl) return;
+        if (item.target) {
+          const el = slideEl.querySelector('.pill-target');
+          if (el) el.innerText = item.target;
+        }
+        if (item.question) {
+          const el = slideEl.querySelector('.pill-question');
+          if (el) el.innerText = item.question;
+        }
+        if (item.speaker) {
+          const el = slideEl.querySelector('.pill-speaker');
+          if (el) el.innerText = item.speaker;
+        }
+        if (item.title) {
+          const el = slideEl.querySelector('.slide-title');
+          if (el) el.innerText = item.title;
+        }
+        if (item.subtitle) {
+          const el = slideEl.querySelector('.slide-subtitle');
+          if (el) el.innerText = item.subtitle;
+        }
+        if (item.cards) {
+          const cardEls = slideEl.querySelectorAll('.metric-card');
+          item.cards.forEach((c, cIdx) => {
+            if (cardEls[cIdx]) {
+              if (c.label) cardEls[cIdx].querySelector('.card-label').innerText = c.label;
+              if (c.stat) cardEls[cIdx].querySelector('.card-stat').innerText = c.stat;
+              if (c.desc) cardEls[cIdx].querySelector('.card-desc').innerText = c.desc;
+            }
+          });
+        }
+      });
+    }
+
+    async function applySavedEdits() {
+      // 1. Render from local storage immediately for fast load
+      const saved = localStorage.getItem('sdg14_slides_custom_data');
+      if (saved) {
+        try {
+          renderDataToDOM(JSON.parse(saved));
+        } catch (e) {}
+      }
+
+      // 2. Fetch latest shared data from Cloud
+      const cloudData = await fetchFromCloud();
+      if (cloudData && cloudData.length) {
+        renderDataToDOM(cloudData);
+        localStorage.setItem('sdg14_slides_custom_data', JSON.stringify(cloudData));
+        console.log('Synchronized slides from Cloud Database');
       }
     }
 
