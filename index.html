@@ -392,6 +392,189 @@
       overflow: hidden;
       z-index: 999999;
     }
+
+    /* --- In-Browser Edit Mode Enhancements --- */
+    .hud-top-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-edit-toggle {
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 0.4rem 1.1rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+    .btn-edit-toggle:hover {
+      color: #f59e0b;
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.15);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+    }
+    .btn-edit-toggle.active {
+      color: #ffffff;
+      background: #d97706;
+      border-color: #f59e0b;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      animation: pulseEdit 2s infinite alternate;
+    }
+
+    @keyframes pulseEdit {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.04); }
+    }
+
+    /* Floating Edit Toolbar */
+    .edit-toolbar {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(20px);
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .edit-toolbar.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -20px);
+    }
+    .edit-toolbar-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .edit-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-tb {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #f8fafc;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+    .btn-tb:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .btn-tb-save {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
+    }
+    .btn-tb-save:hover {
+      background: #0369a1;
+      color: #ffffff;
+      transform: scale(1.04);
+    }
+    .btn-tb-danger:hover {
+      background: rgba(225, 29, 72, 0.25);
+      border-color: #f43f5e;
+      color: #fb7185;
+    }
+    .btn-tb-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      padding: 0.2rem 0.6rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .btn-tb-close:hover {
+      color: #f8fafc;
+    }
+
+    /* ContentEditable visual hints in Edit Mode */
+    body.edit-mode-active .slide-title,
+    body.edit-mode-active .slide-subtitle,
+    body.edit-mode-active .pill,
+    body.edit-mode-active .card-label,
+    body.edit-mode-active .card-stat,
+    body.edit-mode-active .card-desc {
+      cursor: text !important;
+      user-select: text !important;
+      border-radius: 6px;
+      transition: background 0.2s ease, outline 0.2s ease, box-shadow 0.2s ease;
+    }
+    body.edit-mode-active .slide-title:hover,
+    body.edit-mode-active .slide-subtitle:hover,
+    body.edit-mode-active .pill:hover,
+    body.edit-mode-active .card-label:hover,
+    body.edit-mode-active .card-stat:hover,
+    body.edit-mode-active .card-desc:hover {
+      outline: 1.5px dashed rgba(245, 158, 11, 0.85);
+      background: rgba(245, 158, 11, 0.12);
+    }
+    body.edit-mode-active .slide-title:focus,
+    body.edit-mode-active .slide-subtitle:focus,
+    body.edit-mode-active .pill:focus,
+    body.edit-mode-active .card-label:focus,
+    body.edit-mode-active .card-stat:focus,
+    body.edit-mode-active .card-desc:focus {
+      outline: 2px solid #f59e0b !important;
+      background: rgba(245, 158, 11, 0.22) !important;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.45);
+    }
+
+    /* Floating Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #38bdf8;
+      color: #f8fafc;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.35);
+      backdrop-filter: blur(16px);
+      z-index: 999999;
+      opacity: 1;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.hidden {
+      opacity: 0;
+      transform: translate(-50%, 15px);
+    }
+
   </style>
 </head>
 <body>
@@ -419,8 +602,26 @@
     <!-- Top HUD -->
     <header class="hud-top">
       <span class="depth-badge" id="depth-display">DEPTH: 0M • SUNLIGHT SURFACE</span>
-      <a href="speaker_portal.html" class="portal-link" target="_blank">📱 Speaker Portal & Timer</a>
+      <div class="hud-top-right">
+        <button id="btn-edit-mode" class="btn-edit-toggle" title="Phím tắt: E">✏️ Chỉnh sửa nội dung [E]</button>
+        <a href="speaker_portal.html" class="portal-link" target="_blank">📱 Speaker Portal & Timer</a>
+      </div>
     </header>
+
+    <!-- Floating Edit Mode Toolbar -->
+    <div id="edit-toolbar" class="edit-toolbar hidden">
+      <span class="edit-toolbar-title">✏️ Chế độ sửa: Click trực tiếp vào chữ để gõ</span>
+      <div class="edit-toolbar-actions">
+        <button id="btn-save-edits" class="btn-tb btn-tb-save">💾 Lưu thay đổi</button>
+        <button id="btn-download-html" class="btn-tb">📥 Tải file HTML mới</button>
+        <button id="btn-copy-json" class="btn-tb">📋 Sao chép dữ liệu</button>
+        <button id="btn-reset-edits" class="btn-tb btn-tb-danger">🔄 Khôi phục gốc</button>
+        <button id="btn-close-edit" class="btn-tb btn-tb-close" title="Đóng chế độ sửa [Esc]">✖</button>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
 
     <!-- Slide Viewport (12 Structured Slides: 3 Targets x 4 Questions) -->
     <div class="slide-viewport">
@@ -997,7 +1198,205 @@
       });
     }
 
+    // ==========================================
+    // 5. IN-BROWSER EDIT MODE (WYSIWYG & PERSISTENCE)
+    // ==========================================
+    let isEditMode = false;
+    const btnEditMode = document.getElementById('btn-edit-mode');
+    const editToolbar = document.getElementById('edit-toolbar');
+    const btnSaveEdits = document.getElementById('btn-save-edits');
+    const btnDownloadHtml = document.getElementById('btn-download-html');
+    const btnCopyJson = document.getElementById('btn-copy-json');
+    const btnResetEdits = document.getElementById('btn-reset-edits');
+    const btnCloseEdit = document.getElementById('btn-close-edit');
+    const toastEl = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast(msg, duration = 3200) {
+      if (!toastEl) return;
+      toastEl.innerHTML = msg;
+      toastEl.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.add('hidden');
+      }, duration);
+    }
+
+    function getEditableElements() {
+      return document.querySelectorAll(
+        '.slide-title, .slide-subtitle, .pill, .card-label, .card-stat, .card-desc'
+      );
+    }
+
+    function toggleEditMode(enable) {
+      isEditMode = (enable !== undefined) ? enable : !isEditMode;
+      document.body.classList.toggle('edit-mode-active', isEditMode);
+      
+      const editables = getEditableElements();
+      editables.forEach(el => {
+        if (isEditMode) {
+          el.setAttribute('contenteditable', 'true');
+          el.setAttribute('spellcheck', 'false');
+        } else {
+          el.removeAttribute('contenteditable');
+          el.removeAttribute('spellcheck');
+        }
+      });
+
+      if (btnEditMode) {
+        btnEditMode.classList.toggle('active', isEditMode);
+        btnEditMode.innerHTML = isEditMode ? '✏️ Thoát sửa [E]' : '✏️ Chỉnh sửa nội dung [E]';
+      }
+
+      if (editToolbar) {
+        editToolbar.classList.toggle('hidden', !isEditMode);
+      }
+
+      if (isEditMode) {
+        showToast('💡 Đã bật Chế độ Sửa! Click trực tiếp vào chữ trên màn hình để gõ / sửa.');
+      }
+    }
+
+    function extractSlidesData() {
+      const slidesList = document.querySelectorAll('.slide');
+      const data = [];
+      slidesList.forEach((slideEl, idx) => {
+        const item = {
+          num: idx + 1,
+          target: slideEl.querySelector('.pill-target')?.innerText.trim() || '',
+          question: slideEl.querySelector('.pill-question')?.innerText.trim() || '',
+          speaker: slideEl.querySelector('.pill-speaker')?.innerText.trim() || '',
+          title: slideEl.querySelector('.slide-title')?.innerText.trim() || '',
+          subtitle: slideEl.querySelector('.slide-subtitle')?.innerText.trim() || '',
+          cards: []
+        };
+        slideEl.querySelectorAll('.metric-card').forEach(cardEl => {
+          item.cards.push({
+            label: cardEl.querySelector('.card-label')?.innerText.trim() || '',
+            stat: cardEl.querySelector('.card-stat')?.innerText.trim() || '',
+            desc: cardEl.querySelector('.card-desc')?.innerText.trim() || ''
+          });
+        });
+        data.push(item);
+      });
+      return data;
+    }
+
+    function saveEdits() {
+      const data = extractSlidesData();
+      try {
+        localStorage.setItem('sdg14_slides_custom_data', JSON.stringify(data));
+        showToast('💾 Đã lưu thay đổi vào trình duyệt thành công! Khi tải lại trang nội dung vẫn giữ nguyên.');
+      } catch (e) {
+        console.error('Lỗi khi lưu localStorage:', e);
+        showToast('⚠️ Không thể lưu vào bộ nhớ trình duyệt.');
+      }
+    }
+
+    function applySavedEdits() {
+      const saved = localStorage.getItem('sdg14_slides_custom_data');
+      if (!saved) return;
+      try {
+        const data = JSON.parse(saved);
+        const slidesList = document.querySelectorAll('.slide');
+        data.forEach(item => {
+          const sIdx = item.num - 1;
+          const slideEl = slidesList[sIdx];
+          if (!slideEl) return;
+          if (item.target) {
+            const el = slideEl.querySelector('.pill-target');
+            if (el) el.innerText = item.target;
+          }
+          if (item.question) {
+            const el = slideEl.querySelector('.pill-question');
+            if (el) el.innerText = item.question;
+          }
+          if (item.speaker) {
+            const el = slideEl.querySelector('.pill-speaker');
+            if (el) el.innerText = item.speaker;
+          }
+          if (item.title) {
+            const el = slideEl.querySelector('.slide-title');
+            if (el) el.innerText = item.title;
+          }
+          if (item.subtitle) {
+            const el = slideEl.querySelector('.slide-subtitle');
+            if (el) el.innerText = item.subtitle;
+          }
+          if (item.cards) {
+            const cardEls = slideEl.querySelectorAll('.metric-card');
+            item.cards.forEach((c, cIdx) => {
+              if (cardEls[cIdx]) {
+                if (c.label) cardEls[cIdx].querySelector('.card-label').innerText = c.label;
+                if (c.stat) cardEls[cIdx].querySelector('.card-stat').innerText = c.stat;
+                if (c.desc) cardEls[cIdx].querySelector('.card-desc').innerText = c.desc;
+              }
+            });
+          }
+        });
+        console.log('Restored custom slide edits from localStorage');
+      } catch (e) {
+        console.error('Could not apply saved edits:', e);
+      }
+    }
+
+    function downloadEditedHTML() {
+      saveEdits();
+      const wasEdit = isEditMode;
+      if (wasEdit) toggleEditMode(false);
+      
+      const htmlStr = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlStr], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (wasEdit) toggleEditMode(true);
+      showToast('📥 Đã tải file index.html mới chứa đầy đủ nội dung đã chỉnh sửa!');
+    }
+
+    function copyDataJSON() {
+      const data = extractSlidesData();
+      const jsonStr = JSON.stringify(data, null, 2);
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        showToast('📋 Đã sao chép dữ liệu JSON vào Clipboard! Bạn có thể dán vào chat để yêu cầu lưu lên GitHub.');
+      }).catch(err => {
+        console.error('Clipboard copy failed:', err);
+        showToast('⚠️ Không thể tự động sao chép. Vui lòng thử lại.');
+      });
+    }
+
+    function resetToOriginal() {
+      if (confirm('Bạn có chắc muốn xóa các chỉnh sửa và khôi phục về nội dung gốc ban đầu?')) {
+        localStorage.removeItem('sdg14_slides_custom_data');
+        location.reload();
+      }
+    }
+
+    if (btnEditMode) btnEditMode.addEventListener('click', () => toggleEditMode());
+    if (btnSaveEdits) btnSaveEdits.addEventListener('click', saveEdits);
+    if (btnDownloadHtml) btnDownloadHtml.addEventListener('click', downloadEditedHTML);
+    if (btnCopyJson) btnCopyJson.addEventListener('click', copyDataJSON);
+    if (btnResetEdits) btnResetEdits.addEventListener('click', resetToOriginal);
+    if (btnCloseEdit) btnCloseEdit.addEventListener('click', () => toggleEditMode(false));
+
+    // Load saved edits right away on startup
+    applySavedEdits();
+
     window.addEventListener('keydown', (e) => {
+      // If typing in an editable field, ignore navigation keys except Escape to blur
+      if (e.target && (e.target.isContentEditable || ['INPUT', 'TEXTAREA'].includes(e.target.tagName))) {
+        if (e.key === 'Escape') {
+          e.target.blur();
+        }
+        return;
+      }
+
       resetActivity();
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         if (currentIndex < slides.length - 1) {
@@ -1009,10 +1408,16 @@
         }
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
-      } else if (e.key === 'Escape' && isSimulatedFullscreen) {
-        isSimulatedFullscreen = false;
-        document.body.classList.remove('simulated-fullscreen');
-        updateFullscreenUI();
+      } else if (e.key.toLowerCase() === 'e') {
+        toggleEditMode();
+      } else if (e.key === 'Escape') {
+        if (isEditMode) {
+          toggleEditMode(false);
+        } else if (isSimulatedFullscreen) {
+          isSimulatedFullscreen = false;
+          document.body.classList.remove('simulated-fullscreen');
+          updateFullscreenUI();
+        }
       }
     });
 
