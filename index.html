@@ -793,6 +793,110 @@
       color: #38bdf8;
     }
 
+
+    /* ========================================================
+       ON-CARD ACTION CONTROLS (DELETE, MOVE, DRAG, COLOR)
+       ======================================================== */
+    .metric-card {
+      position: relative !important;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease !important;
+    }
+
+    /* Action bar pinned to top-right of each card */
+    .card-action-bar {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: none;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 9999px;
+      padding: 0.25rem 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+      user-select: none;
+    }
+    body.edit-mode-active .card-action-bar {
+      display: flex !important;
+    }
+
+    .cab-btn {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e2e8f0;
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    .cab-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: scale(1.15);
+    }
+    .cab-btn-del:hover {
+      background: rgba(225, 29, 72, 0.3);
+      border-color: #f43f5e;
+      color: #fb7185;
+    }
+    .cab-btn-drag {
+      cursor: grab;
+      color: #38bdf8;
+    }
+    .cab-btn-drag:active {
+      cursor: grabbing;
+      background: #0284c7;
+      color: white;
+    }
+
+    /* Add Card Button under Grid */
+    .grid-add-card-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px dashed rgba(56, 189, 248, 0.5);
+      border-radius: 1.25rem;
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      min-height: 140px;
+    }
+    body.edit-mode-active .grid-add-card-btn {
+      display: flex !important;
+    }
+    .grid-add-card-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Grid Auto Sizing based on visible cards */
+    .metrics-grid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+      gap: 1.5rem !important;
+      max-width: 1240px !important;
+      width: 100% !important;
+      transition: all 0.3s ease !important;
+    }
+
   </style>
 </head>
 <body>
@@ -856,6 +960,48 @@
     <div id="toast" class="toast hidden"></div>
 
     <!-- Slide Viewport (12 Structured Slides: 3 Targets x 4 Questions) -->
+    
+    <!-- Floating Mini-Canva Inspector Bar -->
+    <div id="canva-inspector" class="canva-inspector hidden">
+      <!-- Drag Handle -->
+      <span class="ci-drag-handle" id="ci-drag" title="Bấm giữ và kéo để di chuyển vị trí">✥ Di chuyển</span>
+
+      <!-- Color Palette -->
+      <div class="ci-group" title="Đổi màu viền & điểm nhấn">
+        <span class="ci-color-dot" style="background:#38bdf8;" onclick="setElementColor('#38bdf8', 'border-cyan')" title="Xanh Cyan"></span>
+        <span class="ci-color-dot" style="background:#34d399;" onclick="setElementColor('#34d399', 'border-emerald')" title="Xanh Ngọc Lục Bảo"></span>
+        <span class="ci-color-dot" style="background:#c084fc;" onclick="setElementColor('#c084fc', 'border-blue')" title="Tím Vực Sâu"></span>
+        <span class="ci-color-dot" style="background:#fbbf24;" onclick="setElementColor('#fbbf24', 'border-gold')" title="Vàng Hoàng Hôn"></span>
+        <span class="ci-color-dot" style="background:#fb7185;" onclick="setElementColor('#fb7185', 'border-rose')" title="Đỏ San Hô"></span>
+        <span class="ci-color-dot" style="background:rgba(15,23,42,0.85); border-color:#94a3b8;" onclick="setElementColor('rgba(15,23,42,0.85)', '')" title="Kính Mờ Tối"></span>
+      </div>
+
+      <!-- Opacity Slider -->
+      <div class="ci-group ci-slider-wrap" title="Độ mờ kính trong suốt">
+        <span>Độ mờ:</span>
+        <input type="range" class="ci-slider" id="ci-opacity" min="20" max="100" value="85" oninput="setElementOpacity(this.value)">
+      </div>
+
+      <!-- Font Sizing -->
+      <div class="ci-group" title="Cỡ chữ">
+        <button class="ci-btn" onclick="adjustFontSize(2)" title="Tăng cỡ chữ">A+</button>
+        <button class="ci-btn" onclick="adjustFontSize(-2)" title="Giảm cỡ chữ">A-</button>
+      </div>
+
+      <!-- Alignment -->
+      <div class="ci-group" title="Căn lề">
+        <button class="ci-btn" onclick="setElementAlign('left')" title="Căn trái">⬅</button>
+        <button class="ci-btn" onclick="setElementAlign('center')" title="Căn giữa">⬌</button>
+        <button class="ci-btn" onclick="setElementAlign('right')" title="Căn phải">➡</button>
+      </div>
+
+      <!-- Delete Element -->
+      <button class="ci-btn ci-btn-danger" onclick="deleteSelectedElement()" title="Xóa đối tượng này">🗑️ Xóa</button>
+
+      <!-- Close Inspector -->
+      <button class="ci-btn" onclick="deselectElement()" style="border-radius:50%; width:1.5rem; height:1.5rem; padding:0;">✖</button>
+    </div>
+
     <div class="slide-viewport">
       
       <section class="slide active" data-depth="0M • SUNLIGHT SURFACE" data-bg="bg-surface" data-index="0">
@@ -1462,6 +1608,138 @@
 
 
     // ========================================================
+    
+    // ========================================================
+    // DIRECT ON-CARD CONTROLS (DELETE, MOVE, SWAP, COLOR)
+    // ========================================================
+
+    function deleteCard(btn) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      if (confirm('Bạn có chắc muốn XÓA ô thẻ này không?')) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+          card.style.display = 'none';
+          card.setAttribute('data-deleted', 'true');
+          showToast('🗑️ Đã xóa thẻ! Bấm [Lưu & Đồng bộ] để áp dụng cho cả nhóm.');
+        }, 250);
+      }
+    }
+
+    function moveCard(btn, direction) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      const grid = card.parentElement;
+      if (!grid) return;
+
+      if (direction === -1) {
+        // Move Left (previous sibling that is a metric-card)
+        let prev = card.previousElementSibling;
+        while (prev && !prev.classList.contains('metric-card')) {
+          prev = prev.previousElementSibling;
+        }
+        if (prev) {
+          grid.insertBefore(card, prev);
+          showToast('◀ Đã hoán đổi thẻ sang bên trái!');
+        } else {
+          showToast('ℹ Thẻ này đã ở vị trí đầu tiên.');
+        }
+      } else if (direction === 1) {
+        // Move Right (next sibling that is a metric-card)
+        let next = card.nextElementSibling;
+        while (next && !next.classList.contains('metric-card')) {
+          next = next.nextElementSibling;
+        }
+        if (next) {
+          grid.insertBefore(next, card);
+          showToast('▶ Đã hoán đổi thẻ sang bên phải!');
+        } else {
+          showToast('ℹ Thẻ này đã ở vị trí cuối cùng.');
+        }
+      }
+    }
+
+    function cycleCardColor(btn) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      const colors = ['border-cyan', 'border-emerald', 'border-blue', 'border-gold', 'border-rose'];
+      let currentIdx = -1;
+      colors.forEach((c, i) => {
+        if (card.classList.contains(c)) currentIdx = i;
+      });
+      colors.forEach(c => card.classList.remove(c));
+      const nextColor = colors[(currentIdx + 1) % colors.length];
+      card.classList.add(nextColor);
+      showToast('🎨 Đã đổi màu viền phát sáng của thẻ!');
+    }
+
+    function addNewCardToSlide(btn) {
+      const grid = btn.parentElement;
+      if (!grid) return;
+      const customId = 'card_' + Date.now();
+      const newCard = document.createElement('div');
+      newCard.className = 'metric-card border-cyan';
+      newCard.setAttribute('data-custom-id', customId);
+      newCard.innerHTML = `
+        <div class="card-action-bar">
+          <span class="cab-btn cab-btn-drag" title="Kéo di chuyển thẻ tự do">✥</span>
+          <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+          <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+          <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền">🎨</button>
+          <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa thẻ này">🗑️</button>
+        </div>
+        <div class="card-label" contenteditable="true" spellcheck="false">TIÊU ĐỀ THẺ MỚI</div>
+        <div class="card-stat" contenteditable="true" spellcheck="false">+100%</div>
+        <div class="card-desc" contenteditable="true" spellcheck="false">Click vào để gõ nội dung chi tiết cho thẻ này.</div>
+      `;
+      grid.insertBefore(newCard, btn);
+      attachCardDragEvents(newCard);
+      showToast('✨ Đã thêm 1 thẻ mới vào slide! Bạn có thể gõ chữ và bấm ◀ ▶ đổi chỗ.');
+    }
+
+    // Attach Drag-and-Drop to individual cards
+    function attachCardDragEvents(card) {
+      const dragHandle = card.querySelector('.cab-btn-drag');
+      if (!dragHandle) return;
+
+      let isCardDragging = false;
+      let startX = 0, startY = 0;
+      let origX = 0, origY = 0;
+
+      dragHandle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        isCardDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const trans = card.style.transform || '';
+        const match = /translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(trans);
+        origX = match ? parseFloat(match[1]) : 0;
+        origY = match ? parseFloat(match[2]) : 0;
+
+        document.body.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isCardDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        card.style.transform = `translate(${origX + dx}px, ${origY + dy}px)`;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isCardDragging) {
+          isCardDragging = false;
+          document.body.style.cursor = 'default';
+        }
+      });
+    }
+
+    // Attach drag to all existing cards
+    document.querySelectorAll('.metric-card').forEach(attachCardDragEvents);
+
     // MINI-CANVA INTERACTIVE ENGINE (SELECTION, DRAG, RESIZE, CUSTOM SHAPES)
     // ========================================================
     let selectedElement = null;
