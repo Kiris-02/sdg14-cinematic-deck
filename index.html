@@ -2988,12 +2988,12 @@
       return data;
     }
 
-    const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a067127101a07bbdbd8134df';
+    const CLOUD_SYNC_ENDPOINT = 'https://sdg14-cinematic-deck.onrender.com/api/sync';
 
     async function syncToCloud(data) {
       try {
         const res = await fetch(CLOUD_SYNC_ENDPOINT, {
-          method: 'PUT',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: 'SDG14 Slides Sync',
@@ -3014,6 +3014,8 @@
           const json = await res.json();
           if (json && json.data && json.data.slides && json.data.slides.length > 0) {
             return json.data.slides;
+          } else if (json && json.slides && json.slides.length > 0) {
+            return json.slides;
           }
         }
       } catch (e) {
