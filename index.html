@@ -897,6 +897,109 @@
       transition: all 0.3s ease !important;
     }
 
+
+    /* ========================================================
+       PERFECT ON-CARD CONTROLS & UNDO SYSTEM
+       ======================================================== */
+    .metric-card {
+      position: relative !important;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease !important;
+      will-change: transform;
+    }
+
+    /* Prominent Action Bar pinned on top-right of each card */
+    .card-action-bar {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1.5px solid #38bdf8;
+      border-radius: 9999px;
+      padding: 0.3rem 0.65rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.4);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      user-select: none;
+    }
+    body.edit-mode-active .card-action-bar {
+      display: flex !important;
+    }
+
+    .cab-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #f8fafc;
+      padding: 0.25rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    .cab-btn:hover {
+      background: rgba(56, 189, 248, 0.35);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+    .cab-btn-del {
+      background: rgba(225, 29, 72, 0.35);
+      border-color: #fb7185;
+      color: #ffffff;
+    }
+    .cab-btn-del:hover {
+      background: #e11d48;
+      border-color: #ffffff;
+      color: #ffffff;
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(225, 29, 72, 0.7);
+    }
+    .cab-btn-drag {
+      cursor: grab;
+      background: rgba(2, 132, 199, 0.4);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .cab-btn-drag:active {
+      cursor: grabbing;
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    /* Card sent to bottom row (as drawn by user) */
+    .metric-card.card-bottom-row {
+      grid-column: 1 / -1 !important;
+      max-width: 650px !important;
+      margin: 1.5rem auto 0 auto !important;
+      width: 100% !important;
+    }
+
+    /* Dragging state */
+    .metric-card.is-dragging {
+      z-index: 1000 !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.8) !important;
+      cursor: grabbing !important;
+    }
+
+    /* Undo Button styling */
+    .btn-tb-undo {
+      background: rgba(147, 51, 234, 0.25) !important;
+      border-color: #c084fc !important;
+      color: #e9d5ff !important;
+    }
+    .btn-tb-undo:hover {
+      background: #9333ea !important;
+      color: #ffffff !important;
+      transform: scale(1.05);
+    }
+
   </style>
 </head>
 <body>
@@ -948,6 +1051,7 @@
           </div>
         </div>
 
+        <button id="btn-undo" class="btn-tb btn-tb-undo" onclick="performUndo()" title="Hoàn tác thao tác vừa rồi (Ctrl+Z)">↩️ Hoàn tác</button>
         <button id="btn-save-edits" class="btn-tb btn-tb-save">☁️ Lưu & Đồng bộ cả nhóm</button>
         <button id="btn-download-html" class="btn-tb">📥 Tải file HTML mới</button>
         <button id="btn-copy-json" class="btn-tb">📋 Sao chép dữ liệu</button>
@@ -1015,18 +1119,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ORIGIN POINT</div>
             <div class="card-stat">80% Land-Based</div>
             <div class="card-desc">Massive municipal waste, toxic chemicals, and fertilizers flowing down river basins.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">GLOBAL MANDATE</div>
             <div class="card-stat">Target 2025</div>
             <div class="card-desc">Official UN deadline to prevent and significantly reduce marine pollution of all kinds.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">PRIMARY VECTORS</div>
             <div class="card-stat">N, P & Plastics</div>
             <div class="card-desc">Excess reactive nitrogen, phosphorus, and macro to microplastics choking marine life.</div>
@@ -1045,18 +1176,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SUB-INDICATOR 14.1.1(a)</div>
             <div class="card-stat">ICEP Index</div>
             <div class="card-desc">Index of Coastal Eutrophication Potential monitoring nitrogen and phosphorus chemical runoff.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SUB-INDICATOR 14.1.1(b)</div>
             <div class="card-stat">Plastic Density</div>
             <div class="card-desc">Mass and particle count of macro and micro-plastics per km² of seawater and shoreline.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ECOLOGICAL IMPACT</div>
             <div class="card-stat">500+ Dead Zones</div>
             <div class="card-desc">Hypoxic ocean dead zones worldwide stripped of dissolved oxygen by nutrient-fed algal blooms.</div>
@@ -1075,18 +1233,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SATELLITE SURVEILLANCE</div>
             <div class="card-stat">MODIS & Sentinel</div>
             <div class="card-desc">ESA Sentinel-3 & NASA orbiters scan ocean optical anomalies to detect Chlorophyll-a spikes.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">COASTAL TRANSECTS</div>
             <div class="card-stat">100m Shoreline</div>
             <div class="card-desc">Standardized beach surveys categorizing, weighing, and geolocating macroplastic debris.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SURFACE TRAWLING</div>
             <div class="card-stat">Manta Nets (333µm)</div>
             <div class="card-desc">Fine mesh surface trawls capturing microplastics for FTIR and Raman laboratory spectroscopy.</div>
@@ -1105,18 +1290,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">GLOBAL CUSTODIAN</div>
             <div class="card-stat">UNEP</div>
             <div class="card-desc">United Nations Environment Programme standardizes national reporting methodologies.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">LEGALLY BINDING PACT</div>
             <div class="card-stat">INC Plastics Treaty</div>
             <div class="card-desc">Historic Intergovernmental Negotiating Committee treaty tackling the entire plastic lifecycle.</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">MARITIME LAW</div>
             <div class="card-stat">MARPOL Annex V</div>
             <div class="card-desc">IMO convention strictly banning commercial vessel dumping of plastics and garbage at sea.</div>
@@ -1135,18 +1347,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CORE STRATEGY</div>
             <div class="card-stat">EBM Approach</div>
             <div class="card-desc">Ecosystem-Based Management: regulating human pressures across whole integrated biomes.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CRITICAL HABITATS</div>
             <div class="card-stat">Reefs & Mangroves</div>
             <div class="card-desc">Active conservation of coastal storm buffers, blue carbon sinks, and larval fish nurseries.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">TIMELINE MANDATE</div>
             <div class="card-stat">Urgent Catch-up</div>
             <div class="card-desc">Target 14.2 held an early 2020 deadline; national implementations are in aggressive acceleration.</div>
@@ -1165,18 +1404,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">UN INDICATOR 14.2.1</div>
             <div class="card-stat">Policy Adoption</div>
             <div class="card-desc">Number of countries adopting ecosystem-based approaches to manage marine areas.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SPATIAL INSTRUMENTS</div>
             <div class="card-stat">MSP & ICZM</div>
             <div class="card-desc">Marine Spatial Planning and Integrated Coastal Zone Management national legal decrees.</div>
           </div>
 
           <div class="metric-card border-rose">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CRITICAL LIMITATION</div>
             <div class="card-stat">Paper Parks</div>
             <div class="card-desc">Indicator measures enacted paperwork—it does not prove coral recovery or enforced patrols.</div>
@@ -1195,18 +1461,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">REEF HEALTH NETWORK</div>
             <div class="card-stat">GCRMN Censuses</div>
             <div class="card-desc">Global Coral Reef Monitoring Network standardizing live hard coral cover and bleaching rates.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">GENOMIC SAMPLING</div>
             <div class="card-stat">eDNA Sequencing</div>
             <div class="card-desc">Filtering seawater DNA to profile all fish species present without destructive netting.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ACOUSTIC BATHYMETRY</div>
             <div class="card-stat">Multibeam Sonar</div>
             <div class="card-desc">3D acoustic mapping of benthic rugosity, structural reef complexity, and seagrass meadows.</div>
@@ -1225,18 +1518,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">GLOBAL BIODIVERSITY PACT</div>
             <div class="card-stat">30x30 Target</div>
             <div class="card-desc">Kunming-Montreal GBF Target 3: legally designate 30% of global oceans as MPAs by 2030.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">INTERNATIONAL WATERS</div>
             <div class="card-stat">BBNJ Treaty</div>
             <div class="card-desc">Biodiversity Beyond National Jurisdiction: first UN instrument to enforce high-seas protected zones.</div>
           </div>
 
           <div class="metric-card border-emerald">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">LEAD AGENCIES</div>
             <div class="card-stat">UNEP / CBD</div>
             <div class="card-desc">UNEP harmonizes compliance with the Convention on Biological Diversity Secretariat.</div>
@@ -1255,18 +1575,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">PLANETARY SINK</div>
             <div class="card-stat">25% CO2 Absorbed</div>
             <div class="card-desc">Oceans absorb a quarter of anthropogenic carbon emissions, creating carbonic acid (H2CO3).</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ACIDITY SURGE</div>
             <div class="card-stat">+30% Acidity</div>
             <div class="card-desc">A 0.1 unit drop in global surface seawater pH represents a 30% surge in hydrogen ion (H+) concentration.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CALCIFIER CRISIS</div>
             <div class="card-stat">Corrosive Waters</div>
             <div class="card-desc">Depletion of carbonate ions (CO3²⁻) dissolves shells of pteropods, shellfish, and coral skeletons.</div>
@@ -1285,18 +1632,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">PRIMARY CHEMICAL METRIC</div>
             <div class="card-stat">Total pH Scale (pHT)</div>
             <div class="card-desc">Seawater pH measured continuously to high scientific precision of ±0.002 units.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CARBON SYSTEM PARTNERS</div>
             <div class="card-stat">DIC & Alkalinity</div>
             <div class="card-desc">Reporting Total Dissolved Inorganic Carbon and Total Alkalinity alongside pH for full thermodynamic equations.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SATURATION HORIZON</div>
             <div class="card-stat">Ω Aragonite</div>
             <div class="card-desc">Tracking shoaling aragonite saturation depth where deep ocean currents become corrosive to bone.</div>
@@ -1315,18 +1689,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ROBOTIC PROFILERS</div>
             <div class="card-stat">BGC-Argo Floats</div>
             <div class="card-desc">Autonomous robotic floats equipped with ISFET pH sensors diving continuously to 2,000 meters.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">SHIPBOARD PURITY</div>
             <div class="card-stat">m-Cresol Purple</div>
             <div class="card-desc">Purified dye spectrophotometry aboard research vessels calibrated against Certified Reference Materials.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">GLOBAL NETWORK</div>
             <div class="card-stat">GOA-ON Network</div>
             <div class="card-desc">Global Ocean Acidification Observing Network coordinating thousands of buoys and ships across 100+ nations.</div>
@@ -1345,18 +1746,45 @@
         <div class="metrics-grid">
           
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CUSTODIAN LEAD</div>
             <div class="card-stat">UNESCO-IOC</div>
             <div class="card-desc">Intergovernmental Oceanographic Commission aggregates and publishes the global SDG 14.3.1 data portal.</div>
           </div>
 
           <div class="metric-card border-blue">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">CAPACITY EQUITY</div>
             <div class="card-stat">OA in a Box</div>
             <div class="card-desc">Deploying standardized low-cost chemical laboratory kits to Small Island Developing States (SIDS).</div>
           </div>
 
           <div class="metric-card border-cyan">
+          <!-- Action Controls for This Card -->
+          <div class="card-action-bar">
+            <span class="cab-btn cab-btn-drag" title="Bấm giữ để kéo thẻ đi bất cứ đâu">✥ Kéo</span>
+            <button class="cab-btn" onclick="toggleCardBottomRow(this)" title="Chuyển thẻ xuống hàng dưới / lên trên">⬇ Xuống dưới</button>
+            <button class="cab-btn" onclick="moveCard(this, -1)" title="Đổi chỗ sang trái">◀</button>
+            <button class="cab-btn" onclick="moveCard(this, 1)" title="Đổi chỗ sang phải">▶</button>
+            <button class="cab-btn" onclick="cycleCardColor(this)" title="Đổi màu viền thẻ">🎨</button>
+            <button class="cab-btn cab-btn-del" onclick="deleteCard(this)" title="Xóa ô thẻ này">🗑️ Xóa</button>
+          </div>
             <div class="card-label">ROOT REMEDY</div>
             <div class="card-stat">UNFCCC Paris Pact</div>
             <div class="card-desc">Ocean acidification has no local engineering cure—its only solution is reducing global fossil emissions.</div>
@@ -1739,6 +2167,175 @@
 
     // Attach drag to all existing cards
     document.querySelectorAll('.metric-card').forEach(attachCardDragEvents);
+
+    
+    // ========================================================
+    // UNDO HISTORY & ADVANCED CARD POSITIONING ENGINE
+    // ========================================================
+    const undoStack = [];
+    const MAX_UNDO = 20;
+
+    function saveUndoState() {
+      const activeSlide = slides[currentIndex];
+      if (!activeSlide) return;
+      // Save HTML snapshot of active slide
+      undoStack.push({
+        slideIndex: currentIndex,
+        html: activeSlide.innerHTML
+      });
+      if (undoStack.length > MAX_UNDO) undoStack.shift();
+    }
+
+    function performUndo() {
+      if (!undoStack.length) {
+        showToast('ℹ Không còn thao tác nào để hoàn tác.');
+        return;
+      }
+      const lastState = undoStack.pop();
+      const targetSlide = slides[lastState.slideIndex];
+      if (targetSlide) {
+        targetSlide.innerHTML = lastState.html;
+        setupCardEvents(targetSlide);
+        showToast('↩️ Đã hoàn tác thao tác vừa rồi thành công!');
+      }
+    }
+
+    // Toggle card between normal column and bottom row (centered)
+    function toggleCardBottomRow(btn) {
+      saveUndoState();
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      const isBottom = card.classList.toggle('card-bottom-row');
+      btn.innerText = isBottom ? '⬆ Lên trên' : '⬇ Xuống dưới';
+      btn.title = isBottom ? 'Đưa thẻ về hàng trên' : 'Chuyển thẻ xuống hàng dưới (chính giữa)';
+      showToast(isBottom ? '⬇ Đã đưa thẻ xuống hàng dưới chính giữa!' : '⬆ Đã đưa thẻ về hàng trên!');
+    }
+
+    // Delete Card with Undo Support
+    function deleteCard(btn) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      if (confirm('Bạn có chắc muốn XÓA ô thẻ này khỏi slide không? (Có thể bấm Hoàn tác để lấy lại)')) {
+        saveUndoState();
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+          card.style.display = 'none';
+          card.setAttribute('data-deleted', 'true');
+          showToast('🗑️ Đã xóa ô thẻ! Bạn có thể bấm [↩️ Hoàn tác] nếu muốn khôi phục.');
+        }, 220);
+      }
+    }
+
+    // Move Card Left / Right
+    function moveCard(btn, direction) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      const grid = card.parentElement;
+      if (!grid) return;
+      saveUndoState();
+
+      if (direction === -1) {
+        let prev = card.previousElementSibling;
+        while (prev && !prev.classList.contains('metric-card')) {
+          prev = prev.previousElementSibling;
+        }
+        if (prev) {
+          grid.insertBefore(card, prev);
+          showToast('◀ Đã hoán đổi thẻ sang bên trái!');
+        }
+      } else if (direction === 1) {
+        let next = card.nextElementSibling;
+        while (next && !next.classList.contains('metric-card')) {
+          next = next.nextElementSibling;
+        }
+        if (next) {
+          grid.insertBefore(next, card);
+          showToast('▶ Đã hoán đổi thẻ sang bên phải!');
+        }
+      }
+    }
+
+    // Cycle Card Color
+    function cycleCardColor(btn) {
+      const card = btn.closest('.metric-card');
+      if (!card) return;
+      saveUndoState();
+      const colors = ['border-cyan', 'border-emerald', 'border-blue', 'border-gold', 'border-rose'];
+      let currentIdx = -1;
+      colors.forEach((c, i) => {
+        if (card.classList.contains(c)) currentIdx = i;
+      });
+      colors.forEach(c => card.classList.remove(c));
+      const nextColor = colors[(currentIdx + 1) % colors.length];
+      card.classList.add(nextColor);
+      showToast('🎨 Đã đổi màu viền thẻ!');
+    }
+
+    // Drag Card Anywhere Across Screen
+    function attachCardDragEvents(card) {
+      const dragHandle = card.querySelector('.cab-btn-drag');
+      if (!dragHandle) return;
+
+      let isCardDragging = false;
+      let startMouseX = 0, startMouseY = 0;
+      let initX = 0, initY = 0;
+
+      dragHandle.onmousedown = function(e) {
+        if (!isEditMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        saveUndoState();
+
+        isCardDragging = true;
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
+
+        const trans = card.style.transform || '';
+        const match = /translate3d\(([-0-9.]+)px,\s*([-0-9.]+)px/.exec(trans) || /translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(trans);
+        initX = match ? parseFloat(match[1]) : 0;
+        initY = match ? parseFloat(match[2]) : 0;
+
+        card.classList.add('is-dragging');
+        document.body.style.cursor = 'grabbing';
+      };
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isCardDragging) return;
+        const dx = e.clientX - startMouseX;
+        const dy = e.clientY - startMouseY;
+        card.style.transform = `translate3d(${initX + dx}px, ${initY + dy}px, 0)`;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isCardDragging) {
+          isCardDragging = false;
+          card.classList.remove('is-dragging');
+          document.body.style.cursor = 'default';
+          showToast('📍 Đã đặt thẻ vào vị trí mới! Bấm [Lưu & Đồng bộ] để lưu.');
+        }
+      });
+    }
+
+    function setupCardEvents(scope) {
+      const parent = scope || document;
+      parent.querySelectorAll('.metric-card').forEach(card => {
+        attachCardDragEvents(card);
+      });
+    }
+
+    // Initialize Card Events on startup
+    setupCardEvents();
+
+    // Ctrl+Z Undo Listener
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (!e.target || !e.target.isContentEditable) {
+          e.preventDefault();
+          performUndo();
+        }
+      }
+    });
 
     // MINI-CANVA INTERACTIVE ENGINE (SELECTION, DRAG, RESIZE, CUSTOM SHAPES)
     // ========================================================
