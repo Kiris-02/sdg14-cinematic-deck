@@ -1000,6 +1000,105 @@
       transform: scale(1.05);
     }
 
+
+    /* ========================================================
+       RICH TEXT FORMATTING TOOLBAR (WORD / CANVA STYLE)
+       ======================================================== */
+    .text-format-toolbar {
+      position: fixed;
+      z-index: 100005;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1.5px solid #38bdf8;
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(56, 189, 248, 0.4);
+      backdrop-filter: blur(20px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      user-select: none;
+    }
+    .text-format-toolbar.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.95);
+    }
+
+    .tft-group {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      border-right: 1px solid rgba(148, 163, 184, 0.25);
+      padding-right: 0.5rem;
+    }
+
+    .tft-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #f8fafc;
+      width: 1.85rem;
+      height: 1.85rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1;
+    }
+    .tft-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+    .tft-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
+    /* Text Color Dots */
+    .tft-color-dot {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .tft-color-dot:hover {
+      transform: scale(1.25);
+      border-color: #ffffff;
+    }
+
+    /* Native Color Input wrapper */
+    .tft-custom-color-wrap {
+      position: relative;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1.5px solid #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+    }
+    .tft-custom-color-wrap input[type="color"] {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 40px;
+      height: 40px;
+      opacity: 0;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -1062,6 +1161,50 @@
 
     <!-- Notification Toast -->
     <div id="toast" class="toast hidden"></div>
+
+    <!-- Floating Rich Text Formatting Toolbar (Word / Canva Style) -->
+    <div id="text-format-toolbar" class="text-format-toolbar hidden">
+      <!-- Basic Text Styles (Bold, Italic, Underline, Strike) -->
+      <div class="tft-group">
+        <button class="tft-btn" onmousedown="applyTextFormat(event, 'bold')" title="In đậm [Ctrl+B]"><b>B</b></button>
+        <button class="tft-btn" onmousedown="applyTextFormat(event, 'italic')" title="In nghiêng [Ctrl+I]"><i>I</i></button>
+        <button class="tft-btn" onmousedown="applyTextFormat(event, 'underline')" title="Gạch chân [Ctrl+U]"><u>U</u></button>
+        <button class="tft-btn" onmousedown="applyTextFormat(event, 'strikeThrough')" title="Gạch ngang"><s>S</s></button>
+      </div>
+
+      <!-- Text Color Palette -->
+      <div class="tft-group" title="Đổi màu chữ">
+        <span class="tft-color-dot" style="background:#ffffff;" onmousedown="applyTextColor(event, '#ffffff')" title="Màu Trắng"></span>
+        <span class="tft-color-dot" style="background:#38bdf8;" onmousedown="applyTextColor(event, '#38bdf8')" title="Xanh Cyan"></span>
+        <span class="tft-color-dot" style="background:#fbbf24;" onmousedown="applyTextColor(event, '#fbbf24')" title="Vàng Gold"></span>
+        <span class="tft-color-dot" style="background:#34d399;" onmousedown="applyTextColor(event, '#34d399')" title="Xanh Ngọc"></span>
+        <span class="tft-color-dot" style="background:#c084fc;" onmousedown="applyTextColor(event, '#c084fc')" title="Tím Neon"></span>
+        <span class="tft-color-dot" style="background:#fb7185;" onmousedown="applyTextColor(event, '#fb7185')" title="Đỏ San Hô"></span>
+        <!-- Custom Color Picker Circle -->
+        <div class="tft-custom-color-wrap" title="Chọn màu chữ tùy ý">
+          <input type="color" onchange="applyTextColor(null, this.value)">
+        </div>
+      </div>
+
+      <!-- Text Highlight Color (Nền chữ) -->
+      <div class="tft-group" title="Tô màu nền chữ (Highlight)">
+        <span style="font-size:0.75rem; color:#94a3b8; margin-right:0.2rem;">Nền:</span>
+        <span class="tft-color-dot" style="background:rgba(251,191,36,0.4); border-color:#fbbf24;" onmousedown="applyTextHighlight(event, 'rgba(251,191,36,0.4)')" title="Highlight Vàng"></span>
+        <span class="tft-color-dot" style="background:rgba(56,189,248,0.4); border-color:#38bdf8;" onmousedown="applyTextHighlight(event, 'rgba(56,189,248,0.4)')" title="Highlight Xanh"></span>
+        <span class="tft-color-dot" style="background:rgba(225,29,72,0.4); border-color:#fb7185;" onmousedown="applyTextHighlight(event, 'rgba(225,29,72,0.4)')" title="Highlight Đỏ"></span>
+        <span class="tft-color-dot" style="background:transparent; border-color:#64748b;" onmousedown="applyTextHighlight(event, 'transparent')" title="Xóa màu nền"></span>
+      </div>
+
+      <!-- Text Size & Alignment -->
+      <div class="tft-group">
+        <button class="tft-btn" onmousedown="changeSelectedFontSize(event, 2)" title="Tăng cỡ chữ">A+</button>
+        <button class="tft-btn" onmousedown="changeSelectedFontSize(event, -2)" title="Giảm cỡ chữ">A-</button>
+      </div>
+
+      <!-- Clear Formatting -->
+      <button class="tft-btn" onmousedown="applyTextFormat(event, 'removeFormat')" title="Xóa toàn bộ định dạng về mặc định">🧹</button>
+    </div>
+
 
     <!-- Slide Viewport (12 Structured Slides: 3 Targets x 4 Questions) -->
     
@@ -2335,6 +2478,100 @@
           performUndo();
         }
       }
+    });
+
+    
+    // ========================================================
+    // RICH TEXT FORMATTING ENGINE (WORD / CANVA STYLE)
+    // ========================================================
+    const textToolbar = document.getElementById('text-format-toolbar');
+    let savedSelectionRange = null;
+
+    function saveCurrentTextSelection() {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        savedSelectionRange = sel.getRangeAt(0).cloneRange();
+      }
+    }
+
+    function restoreCurrentTextSelection() {
+      if (savedSelectionRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedSelectionRange);
+      }
+    }
+
+    function applyTextFormat(e, cmd, val = null) {
+      if (e) e.preventDefault();
+      saveUndoState();
+      restoreCurrentTextSelection();
+      document.execCommand(cmd, false, val);
+      saveCurrentTextSelection();
+      showToast('✍️ Đã áp dụng định dạng chữ!');
+    }
+
+    function applyTextColor(e, colorHex) {
+      if (e) e.preventDefault();
+      saveUndoState();
+      restoreCurrentTextSelection();
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('foreColor', false, colorHex);
+      saveCurrentTextSelection();
+      showToast('🎨 Đã đổi màu chữ thành công!');
+    }
+
+    function applyTextHighlight(e, colorRgba) {
+      if (e) e.preventDefault();
+      saveUndoState();
+      restoreCurrentTextSelection();
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('hiliteColor', false, colorRgba);
+      saveCurrentTextSelection();
+      showToast('🖍️ Đã tô màu nền chữ!');
+    }
+
+    function changeSelectedFontSize(e, delta) {
+      if (e) e.preventDefault();
+      saveUndoState();
+      restoreCurrentTextSelection();
+      const sel = window.getSelection();
+      if (sel && sel.anchorNode) {
+        let parentEl = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+        if (parentEl) {
+          const curSize = parseFloat(window.getComputedStyle(parentEl).fontSize);
+          parentEl.style.fontSize = `${Math.max(12, curSize + delta)}px`;
+          showToast(`🔤 Đã đổi cỡ chữ: ${Math.round(curSize + delta)}px`);
+        }
+      }
+    }
+
+    // Monitor text selection across the document
+    document.addEventListener('selectionchange', () => {
+      if (!isEditMode || !textToolbar) return;
+
+      const sel = window.getSelection();
+      if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          saveCurrentTextSelection();
+          const topPos = Math.max(70, rect.top - 52);
+          const leftPos = Math.max(15, Math.min(window.innerWidth - 480, rect.left));
+          textToolbar.style.top = `${topPos}px`;
+          textToolbar.style.left = `${leftPos}px`;
+          textToolbar.classList.remove('hidden');
+          return;
+        }
+      }
+
+      // Hide if click was outside the toolbar
+      setTimeout(() => {
+        const currentSel = window.getSelection();
+        if (!currentSel || currentSel.isCollapsed) {
+          textToolbar.classList.add('hidden');
+        }
+      }, 200);
     });
 
     // MINI-CANVA INTERACTIVE ENGINE (SELECTION, DRAG, RESIZE, CUSTOM SHAPES)
