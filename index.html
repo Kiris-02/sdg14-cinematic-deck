@@ -575,6 +575,224 @@
       transform: translate(-50%, 15px);
     }
 
+
+    /* ========================================================
+       MINI-CANVA VISUAL EDITOR STYLES
+       ======================================================== */
+    
+    /* Active selection box */
+    body.edit-mode-active .canva-selected {
+      outline: 2px solid #38bdf8 !important;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important;
+      position: relative !important;
+    }
+
+    /* Floating Mini-Canva Inspector Bar */
+    .canva-inspector {
+      position: fixed;
+      z-index: 100000;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.35);
+      backdrop-filter: blur(24px);
+      border-radius: 9999px;
+      padding: 0.45rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      user-select: none;
+    }
+    .canva-inspector.hidden {
+      display: none !important;
+    }
+
+    /* Inspector Controls */
+    .ci-drag-handle {
+      cursor: grab;
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .ci-drag-handle:active {
+      cursor: grabbing;
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .ci-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-right: 1px solid rgba(148, 163, 184, 0.2);
+      padding-right: 0.65rem;
+    }
+
+    /* Color Palette Dots */
+    .ci-color-dot {
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .ci-color-dot:hover {
+      transform: scale(1.25);
+      border-color: #ffffff;
+    }
+
+    /* Mini Buttons */
+    .ci-btn {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #e2e8f0;
+      padding: 0.25rem 0.55rem;
+      border-radius: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .ci-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+    .ci-btn-danger:hover {
+      background: rgba(225, 29, 72, 0.3);
+      border-color: #f43f5e;
+      color: #fb7185;
+    }
+
+    /* Opacity Slider */
+    .ci-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .ci-slider {
+      width: 60px;
+      cursor: pointer;
+      accent-color: #38bdf8;
+    }
+
+    /* Corner Resize Handle */
+    .canva-resize-handle {
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      width: 14px;
+      height: 14px;
+      background: #38bdf8;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      cursor: nwse-resize;
+      z-index: 100;
+      display: none;
+    }
+    body.edit-mode-active .canva-selected .canva-resize-handle {
+      display: block;
+    }
+
+    /* Custom Added Shapes */
+    .custom-shape {
+      position: relative;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .custom-shape:hover {
+      outline: 1.5px dashed rgba(56, 189, 248, 0.6);
+    }
+
+    .custom-text-box {
+      font-size: 1.15rem;
+      color: #f8fafc;
+      padding: 0.75rem 1.25rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 0.75rem;
+      backdrop-filter: blur(16px);
+      max-width: 500px;
+      line-height: 1.6;
+    }
+
+    .custom-glass-box {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      min-width: 260px;
+      min-height: 120px;
+    }
+
+    .custom-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+      width: 100%;
+      max-width: 600px;
+      margin: 1rem 0;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+    }
+
+    /* Add Element Dropdown Menu */
+    .add-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .add-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.5rem;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 0.75rem;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      z-index: 100001;
+      min-width: 180px;
+    }
+    .add-dropdown-menu.hidden {
+      display: none;
+    }
+    .add-item-btn {
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      padding: 0.5rem 0.85rem;
+      border-radius: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .add-item-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+    }
+
   </style>
 </head>
 <body>
@@ -612,6 +830,20 @@
     <div id="edit-toolbar" class="edit-toolbar hidden">
       <span class="edit-toolbar-title">✏️ Chế độ sửa: Click vào chữ để gõ • Tự động đồng bộ Đám mây ☁️</span>
       <div class="edit-toolbar-actions">
+        <!-- Add Element Dropdown -->
+        <div class="add-dropdown">
+          <button id="btn-add-dropdown" class="btn-tb" style="background: rgba(56,189,248,0.2); border-color:#38bdf8; color:#38bdf8;">
+            ➕ Thêm đối tượng ▾
+          </button>
+          <div id="add-menu" class="add-dropdown-menu hidden">
+            <button class="add-item-btn" onclick="addNewElement('card')">📊 Thêm Thẻ số liệu</button>
+            <button class="add-item-btn" onclick="addNewElement('textbox')">📝 Thêm Hộp chữ tự do</button>
+            <button class="add-item-btn" onclick="addNewElement('glassbox')">🔲 Thêm Khung kính mờ</button>
+            <button class="add-item-btn" onclick="addNewElement('pill')">🏷️ Thêm Huy hiệu</button>
+            <button class="add-item-btn" onclick="addNewElement('divider')">➖ Thêm Đường kẻ sáng</button>
+          </div>
+        </div>
+
         <button id="btn-save-edits" class="btn-tb btn-tb-save">☁️ Lưu & Đồng bộ cả nhóm</button>
         <button id="btn-download-html" class="btn-tb">📥 Tải file HTML mới</button>
         <button id="btn-copy-json" class="btn-tb">📋 Sao chép dữ liệu</button>
@@ -1228,7 +1460,294 @@
       );
     }
 
+
+    // ========================================================
+    // MINI-CANVA INTERACTIVE ENGINE (SELECTION, DRAG, RESIZE, CUSTOM SHAPES)
+    // ========================================================
+    let selectedElement = null;
+    const canvaInspector = document.getElementById('canva-inspector');
+    const ciOpacity = document.getElementById('ci-opacity');
+    const addMenu = document.getElementById('add-menu');
+    const btnAddDropdown = document.getElementById('btn-add-dropdown');
+
+    // Toggle Dropdown Menu
+    if (btnAddDropdown) {
+      btnAddDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        addMenu.classList.toggle('hidden');
+      });
+    }
+
+    window.addEventListener('click', (e) => {
+      if (addMenu && !addMenu.contains(e.target) && e.target !== btnAddDropdown) {
+        addMenu.classList.add('hidden');
+      }
+    });
+
+    // Make elements selectable in Edit Mode
+    function setupElementSelection() {
+      const targets = document.querySelectorAll(
+        '.slide-title, .slide-subtitle, .pill, .metric-card, .custom-shape'
+      );
+
+      targets.forEach(el => {
+        // Ensure corner resize handle exists
+        if (!el.querySelector('.canva-resize-handle')) {
+          const handle = document.createElement('div');
+          handle.className = 'canva-resize-handle';
+          handle.title = 'Kéo để chỉnh kích thước';
+          el.appendChild(handle);
+          attachResizeHandler(handle, el);
+        }
+
+        el.onclick = function(e) {
+          if (!isEditMode) return;
+          // Don't deselect if clicking inside
+          e.stopPropagation();
+          selectElement(el);
+        };
+      });
+    }
+
+    function selectElement(el) {
+      if (selectedElement) {
+        selectedElement.classList.remove('canva-selected');
+      }
+      selectedElement = el;
+      if (!selectedElement) {
+        if (canvaInspector) canvaInspector.classList.add('hidden');
+        return;
+      }
+
+      selectedElement.classList.add('canva-selected');
+      updateInspectorPosition();
+
+      // Read current opacity
+      if (ciOpacity) {
+        const curOp = window.getComputedStyle(selectedElement).opacity;
+        ciOpacity.value = Math.round(parseFloat(curOp || 1) * 100);
+      }
+
+      if (canvaInspector) canvaInspector.classList.remove('hidden');
+    }
+
+    function deselectElement() {
+      if (selectedElement) {
+        selectedElement.classList.remove('canva-selected');
+        selectedElement = null;
+      }
+      if (canvaInspector) canvaInspector.classList.add('hidden');
+    }
+
+    function updateInspectorPosition() {
+      if (!selectedElement || !canvaInspector) return;
+      const rect = selectedElement.getBoundingClientRect();
+      const topPos = Math.max(70, rect.top - 55);
+      const leftPos = Math.max(20, Math.min(window.innerWidth - 480, rect.left));
+      canvaInspector.style.top = `${topPos}px`;
+      canvaInspector.style.left = `${leftPos}px`;
+    }
+
+    window.addEventListener('resize', updateInspectorPosition);
+    window.addEventListener('scroll', updateInspectorPosition);
+
+    // Color Setting
+    function setElementColor(hexColor, borderClass) {
+      if (!selectedElement) return;
+      if (selectedElement.classList.contains('metric-card')) {
+        // Remove old border classes
+        ['border-cyan', 'border-emerald', 'border-blue', 'border-gold', 'border-rose'].forEach(c => selectedElement.classList.remove(c));
+        if (borderClass) {
+          selectedElement.classList.add(borderClass);
+        } else {
+          selectedElement.style.borderColor = hexColor;
+        }
+      } else {
+        selectedElement.style.borderColor = hexColor;
+        if (selectedElement.classList.contains('pill') || selectedElement.classList.contains('custom-divider')) {
+          selectedElement.style.color = hexColor;
+        }
+      }
+      showToast('🎨 Đã cập nhật màu sắc thành công!');
+    }
+
+    // Opacity Setting
+    function setElementOpacity(val) {
+      if (!selectedElement) return;
+      selectedElement.style.opacity = val / 100;
+    }
+
+    // Font Size Setting
+    function adjustFontSize(delta) {
+      if (!selectedElement) return;
+      const curSize = parseFloat(window.getComputedStyle(selectedElement).fontSize);
+      selectedElement.style.fontSize = `${Math.max(12, curSize + delta)}px`;
+    }
+
+    // Text Alignment
+    function setElementAlign(align) {
+      if (!selectedElement) return;
+      selectedElement.style.textAlign = align;
+    }
+
+    // Delete Element
+    function deleteSelectedElement() {
+      if (!selectedElement) return;
+      if (confirm('Bạn có chắc muốn xóa đối tượng này khỏi slide không?')) {
+        selectedElement.style.display = 'none';
+        selectedElement.setAttribute('data-deleted', 'true');
+        deselectElement();
+        showToast('🗑️ Đã xóa đối tượng. Bấm [Lưu] để đồng bộ!');
+      }
+    }
+
+    // Drag-and-Drop Repositioning via Drag Handle
+    const ciDrag = document.getElementById('ci-drag');
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let origTransX = 0, origTransY = 0;
+
+    if (ciDrag) {
+      ciDrag.addEventListener('mousedown', (e) => {
+        if (!selectedElement) return;
+        e.preventDefault();
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        // Parse existing transform translate
+        const trans = selectedElement.style.transform;
+        const match = /translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(trans);
+        if (match) {
+          origTransX = parseFloat(match[1]);
+          origTransY = parseFloat(match[2]);
+        } else {
+          origTransX = 0;
+          origTransY = 0;
+        }
+
+        document.body.style.cursor = 'grabbing';
+      });
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging || !selectedElement) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newX = origTransX + dx;
+      const newY = origTransY + dy;
+      selectedElement.style.transform = `translate(${newX}px, ${newY}px)`;
+      updateInspectorPosition();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = 'default';
+      }
+    });
+
+    // Corner Resizing
+    function attachResizeHandler(handle, parentEl) {
+      let isResizing = false;
+      let startW = 0, startH = 0, startMouseX = 0, startMouseY = 0;
+
+      handle.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        isResizing = true;
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
+        startW = parentEl.offsetWidth;
+        startH = parentEl.offsetHeight;
+        document.body.style.cursor = 'nwse-resize';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        const w = Math.max(100, startW + (e.clientX - startMouseX));
+        const h = Math.max(50, startH + (e.clientY - startMouseY));
+        parentEl.style.width = `${w}px`;
+        parentEl.style.height = `${h}px`;
+        parentEl.style.maxWidth = 'none';
+        updateInspectorPosition();
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isResizing) {
+          isResizing = false;
+          document.body.style.cursor = 'default';
+        }
+      });
+    }
+
+    // Add New Elements on the Active Slide
+    function addNewElement(type) {
+      const activeSlide = slides[currentIndex];
+      if (!activeSlide) return;
+      if (addMenu) addMenu.classList.add('hidden');
+
+      const customId = 'custom_' + Date.now();
+      let newEl = null;
+
+      if (type === 'card') {
+        const grid = activeSlide.querySelector('.metrics-grid');
+        if (grid) {
+          newEl = document.createElement('div');
+          newEl.className = 'metric-card border-cyan custom-shape';
+          newEl.setAttribute('data-custom-id', customId);
+          newEl.innerHTML = `
+            <div class="card-label" contenteditable="true" spellcheck="false">TIÊU ĐỀ THẺ MỚI</div>
+            <div class="card-stat" contenteditable="true" spellcheck="false">+100%</div>
+            <div class="card-desc" contenteditable="true" spellcheck="false">Click vào để gõ nội dung mô tả cho thẻ số liệu này.</div>
+          `;
+          grid.appendChild(newEl);
+        }
+      } else if (type === 'textbox') {
+        newEl = document.createElement('div');
+        newEl.className = 'custom-text-box custom-shape';
+        newEl.setAttribute('data-custom-id', customId);
+        newEl.setAttribute('contenteditable', 'true');
+        newEl.setAttribute('spellcheck', 'false');
+        newEl.innerText = '📝 Nhập văn bản tự do của bạn tại đây...';
+        activeSlide.appendChild(newEl);
+      } else if (type === 'glassbox') {
+        newEl = document.createElement('div');
+        newEl.className = 'custom-glass-box custom-shape';
+        newEl.setAttribute('data-custom-id', customId);
+        newEl.setAttribute('contenteditable', 'true');
+        newEl.setAttribute('spellcheck', 'false');
+        newEl.innerHTML = '<h3 style="color:#38bdf8; margin-bottom:0.5rem;">Khung Kính Mờ</h3><p style="color:#cbd5e1;">Nội dung bên trong khung...</p>';
+        activeSlide.appendChild(newEl);
+      } else if (type === 'pill') {
+        newEl = document.createElement('span');
+        newEl.className = 'pill pill-target custom-shape';
+        newEl.setAttribute('data-custom-id', customId);
+        newEl.setAttribute('contenteditable', 'true');
+        newEl.setAttribute('spellcheck', 'false');
+        newEl.innerText = 'TAG MỚI';
+        const row = activeSlide.querySelector('.slide-meta-row');
+        if (row) row.appendChild(newEl);
+        else activeSlide.appendChild(newEl);
+      } else if (type === 'divider') {
+        newEl = document.createElement('div');
+        newEl.className = 'custom-divider custom-shape';
+        newEl.setAttribute('data-custom-id', customId);
+        activeSlide.appendChild(newEl);
+      }
+
+      if (newEl) {
+        setupElementSelection();
+        selectElement(newEl);
+        showToast('✨ Đã thêm đối tượng mới vào slide! Bạn có thể kéo thả và đổi màu theo ý muốn.');
+      }
+    }
+
     function toggleEditMode(enable) {
+      if (!enable && isEditMode) {
+        deselectElement();
+      }
+
       isEditMode = (enable !== undefined) ? enable : !isEditMode;
       document.body.classList.toggle('edit-mode-active', isEditMode);
       
@@ -1253,7 +1772,7 @@
       }
 
       if (isEditMode) {
-        showToast('💡 Đã bật Chế độ Sửa! Click trực tiếp vào chữ trên màn hình để gõ / sửa.');
+        setupElementSelection(); showToast('🎨 Mini-Canva Bật! Bấm chọn đối tượng để đổi màu, kéo thả hoặc bấm [+ Thêm đối tượng].');
       }
     }
 
@@ -1268,15 +1787,47 @@
           speaker: slideEl.querySelector('.pill-speaker')?.innerText.trim() || '',
           title: slideEl.querySelector('.slide-title')?.innerText.trim() || '',
           subtitle: slideEl.querySelector('.slide-subtitle')?.innerText.trim() || '',
-          cards: []
+          titleStyles: {
+            fontSize: slideEl.querySelector('.slide-title')?.style.fontSize || '',
+            textAlign: slideEl.querySelector('.slide-title')?.style.textAlign || '',
+            transform: slideEl.querySelector('.slide-title')?.style.transform || ''
+          },
+          cards: [],
+          customElements: []
         };
-        slideEl.querySelectorAll('.metric-card').forEach(cardEl => {
+
+        // Capture Cards & Styles
+        slideEl.querySelectorAll('.metric-card').forEach((cardEl, cIdx) => {
           item.cards.push({
             label: cardEl.querySelector('.card-label')?.innerText.trim() || '',
             stat: cardEl.querySelector('.card-stat')?.innerText.trim() || '',
-            desc: cardEl.querySelector('.card-desc')?.innerText.trim() || ''
+            desc: cardEl.querySelector('.card-desc')?.innerText.trim() || '',
+            className: cardEl.className,
+            transform: cardEl.style.transform || '',
+            opacity: cardEl.style.opacity || '',
+            width: cardEl.style.width || '',
+            height: cardEl.style.height || '',
+            isDeleted: cardEl.getAttribute('data-deleted') === 'true'
           });
         });
+
+        // Capture Custom Added Elements
+        slideEl.querySelectorAll('.custom-shape:not(.metric-card)').forEach(cEl => {
+          item.customElements.push({
+            id: cEl.getAttribute('data-custom-id') || '',
+            className: cEl.className,
+            html: cEl.innerHTML,
+            text: cEl.innerText,
+            transform: cEl.style.transform || '',
+            opacity: cEl.style.opacity || '',
+            color: cEl.style.color || '',
+            borderColor: cEl.style.borderColor || '',
+            width: cEl.style.width || '',
+            height: cEl.style.height || '',
+            isDeleted: cEl.getAttribute('data-deleted') === 'true'
+          });
+        });
+
         data.push(item);
       });
       return data;
@@ -1341,6 +1892,8 @@
         const sIdx = item.num - 1;
         const slideEl = slidesList[sIdx];
         if (!slideEl) return;
+        
+        // 1. Core Text & Meta
         if (item.target) {
           const el = slideEl.querySelector('.pill-target');
           if (el) el.innerText = item.target;
@@ -1355,12 +1908,21 @@
         }
         if (item.title) {
           const el = slideEl.querySelector('.slide-title');
-          if (el) el.innerText = item.title;
+          if (el) {
+            el.innerText = item.title;
+            if (item.titleStyles) {
+              if (item.titleStyles.fontSize) el.style.fontSize = item.titleStyles.fontSize;
+              if (item.titleStyles.textAlign) el.style.textAlign = item.titleStyles.textAlign;
+              if (item.titleStyles.transform) el.style.transform = item.titleStyles.transform;
+            }
+          }
         }
         if (item.subtitle) {
           const el = slideEl.querySelector('.slide-subtitle');
           if (el) el.innerText = item.subtitle;
         }
+
+        // 2. Cards & Card Styles
         if (item.cards) {
           const cardEls = slideEl.querySelectorAll('.metric-card');
           item.cards.forEach((c, cIdx) => {
@@ -1368,10 +1930,54 @@
               if (c.label) cardEls[cIdx].querySelector('.card-label').innerText = c.label;
               if (c.stat) cardEls[cIdx].querySelector('.card-stat').innerText = c.stat;
               if (c.desc) cardEls[cIdx].querySelector('.card-desc').innerText = c.desc;
+              if (c.className) cardEls[cIdx].className = c.className;
+              if (c.transform) cardEls[cIdx].style.transform = c.transform;
+              if (c.opacity) cardEls[cIdx].style.opacity = c.opacity;
+              if (c.width) cardEls[cIdx].style.width = c.width;
+              if (c.height) cardEls[cIdx].style.height = c.height;
+              if (c.isDeleted) {
+                cardEls[cIdx].style.display = 'none';
+                cardEls[cIdx].setAttribute('data-deleted', 'true');
+              }
+            }
+          });
+        }
+
+        // 3. Custom Elements Rebuilding
+        if (item.customElements && item.customElements.length) {
+          item.customElements.forEach(ce => {
+            let existing = slideEl.querySelector(`[data-custom-id="${ce.id}"]`);
+            if (!existing && !ce.isDeleted) {
+              existing = document.createElement('div');
+              existing.className = ce.className;
+              existing.setAttribute('data-custom-id', ce.id);
+              existing.innerHTML = ce.html;
+              if (ce.className.includes('pill')) {
+                const row = slideEl.querySelector('.slide-meta-row');
+                if (row) row.appendChild(existing);
+                else slideEl.appendChild(existing);
+              } else {
+                slideEl.appendChild(existing);
+              }
+            }
+            if (existing) {
+              if (ce.isDeleted) {
+                existing.style.display = 'none';
+                existing.setAttribute('data-deleted', 'true');
+              } else {
+                if (ce.transform) existing.style.transform = ce.transform;
+                if (ce.opacity) existing.style.opacity = ce.opacity;
+                if (ce.color) existing.style.color = ce.color;
+                if (ce.borderColor) existing.style.borderColor = ce.borderColor;
+                if (ce.width) existing.style.width = ce.width;
+                if (ce.height) existing.style.height = ce.height;
+              }
             }
           });
         }
       });
+
+      setupElementSelection();
     }
 
     async function applySavedEdits() {
