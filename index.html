@@ -1099,6 +1099,49 @@
       cursor: pointer;
     }
 
+
+    /* ========================================================
+       TRUE ZERO-NOISE CINEMA FULLSCREEN MODE
+       ======================================================== */
+    .hud-top {
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* When Fullscreen is Active: 100% Clean Cinema Immersion */
+    body.is-fullscreen .hud-top,
+    body.is-fullscreen .hud-bottom,
+    body.is-fullscreen .card-action-bar,
+    body.is-fullscreen .edit-toolbar,
+    body.is-fullscreen .canva-inspector,
+    body.is-fullscreen .text-format-toolbar,
+    body.is-fullscreen .grid-add-card-btn {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* When mouse moves in fullscreen: briefly reveal controls for presenter */
+    body.is-fullscreen.show-controls .hud-top,
+    body.is-fullscreen.show-controls .hud-bottom {
+      opacity: 0.92 !important;
+      pointer-events: auto !important;
+    }
+
+    /* Keep edit-mode-specific buttons ALWAYS hidden in fullscreen even when mouse moves */
+    body.is-fullscreen .card-action-bar,
+    body.is-fullscreen .edit-toolbar,
+    body.is-fullscreen .grid-add-card-btn,
+    body.is-fullscreen .canva-inspector,
+    body.is-fullscreen .text-format-toolbar {
+      display: none !important;
+    }
+
+    /* Fix any remaining opacity 0.1 autohide */
+    .hud-bottom.autohide {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
   </style>
 </head>
 <body>
@@ -3210,13 +3253,18 @@
     function updateFullscreenUI() {
       if (!btnFullscreen) return;
       if (isPresentationActive()) {
+        document.body.classList.add('is-fullscreen');
         btnFullscreen.innerHTML = '✖ Thu nhỏ';
         btnFullscreen.classList.add('dimmed');
+        // Automatically close Edit Mode when entering Fullscreen
+        if (isEditMode) {
+          toggleEditMode(false);
+        }
         startIdleTimer();
       } else {
+        document.body.classList.remove('is-fullscreen', 'show-controls');
         btnFullscreen.innerHTML = '⛶ Toàn màn hình';
         btnFullscreen.classList.remove('dimmed');
-        if (hudBottom) hudBottom.classList.remove('autohide');
         clearTimeout(idleTimer);
       }
     }
@@ -3225,18 +3273,16 @@
       clearTimeout(idleTimer);
       if (isPresentationActive()) {
         idleTimer = setTimeout(() => {
-          if (hudBottom) {
-            hudBottom.classList.add('autohide');
-          }
-        }, 2500);
+          document.body.classList.remove('show-controls');
+        }, 2000);
       }
     }
 
     function resetActivity() {
-      if (hudBottom) {
-        hudBottom.classList.remove('autohide');
+      if (isPresentationActive()) {
+        document.body.classList.add('show-controls');
+        startIdleTimer();
       }
-      startIdleTimer();
     }
 
     window.addEventListener('mousemove', resetActivity);
