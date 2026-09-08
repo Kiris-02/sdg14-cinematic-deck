@@ -1157,6 +1157,188 @@
       pointer-events: none !important;
     }
 
+  
+    /* ========================================================
+       PRINT ENGINE — HIGH RESOLUTION A4 LANDSCAPE PDF EXPORT
+       ======================================================== */
+    @page {
+      size: 297mm 210mm;
+      margin: 0;
+    }
+
+    @media print {
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        animation: none !important;
+        transition: none !important;
+      }
+
+      html, body {
+        background-color: #030712 !important;
+        color: #f8fafc !important;
+        width: 297mm !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* Hide interactive & canvas elements */
+      #webgl-canvas,
+      #marine-canvas,
+      .ocean-caustics,
+      .cinematic-vignette,
+      .bg-layer,
+      .hud-top,
+      .hud-bottom,
+      .edit-toolbar,
+      .text-format-toolbar,
+      .canva-inspector,
+      .toast,
+      .card-action-bar,
+      .grid-add-card-btn,
+      .canva-resize-handle {
+        display: none !important;
+      }
+
+      .stage {
+        display: block !important;
+        position: static !important;
+        width: 297mm !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      .slide-viewport {
+        display: block !important;
+        position: static !important;
+        width: 297mm !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      .slide {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 297mm !important;
+        height: 210mm !important;
+        min-height: 210mm !important;
+        max-height: 210mm !important;
+        box-sizing: border-box !important;
+        padding: 16mm 22mm !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+      }
+
+      /* Distinct Ocean Depths Backgrounds */
+      .slide[data-bg="bg-surface"] {
+        background-color: #030712 !important;
+        background-image: linear-gradient(135deg, rgba(3, 7, 18, 0.72) 0%, rgba(3, 7, 18, 0.88) 100%), url('assets/surface.jpg') !important;
+      }
+      .slide[data-bg="bg-coral"] {
+        background-color: #030712 !important;
+        background-image: linear-gradient(135deg, rgba(3, 7, 18, 0.72) 0%, rgba(3, 7, 18, 0.88) 100%), url('assets/coral.jpg') !important;
+      }
+      .slide[data-bg="bg-abyss"] {
+        background-color: #030712 !important;
+        background-image: linear-gradient(135deg, rgba(3, 7, 18, 0.72) 0%, rgba(3, 7, 18, 0.88) 100%), url('assets/abyss.jpg') !important;
+      }
+
+      /* Slide Footer Watermark */
+      .slide::after {
+        content: "SDG 14: LIFE BELOW WATER • HOLLYWOOD CINEMATIC DECK";
+        position: absolute;
+        bottom: 8mm;
+        right: 22mm;
+        font-family: 'Space Grotesk', monospace;
+        font-size: 8pt;
+        font-weight: 700;
+        color: rgba(148, 163, 184, 0.6);
+        letter-spacing: 0.12em;
+      }
+
+      .slide-meta-row {
+        margin-bottom: 3.5mm !important;
+        gap: 3mm !important;
+      }
+      .pill {
+        font-size: 7.5pt !important;
+        padding: 1.5mm 3.5mm !important;
+        border-radius: 9999px !important;
+      }
+      .slide-title {
+        font-size: 26pt !important;
+        line-height: 1.15 !important;
+        margin-bottom: 2mm !important;
+        max-width: 250mm !important;
+        -webkit-text-fill-color: #ffffff !important;
+        color: #ffffff !important;
+      }
+      .slide-subtitle {
+        font-size: 11pt !important;
+        margin-bottom: 6mm !important;
+        max-width: 230mm !important;
+        color: #94a3b8 !important;
+      }
+
+      .metrics-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 5mm !important;
+        max-width: 255mm !important;
+        width: 100% !important;
+      }
+      .metric-card {
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 4mm !important;
+        padding: 4.5mm 5.5mm !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+      .metric-card::before {
+        width: 1.5mm !important;
+      }
+      .card-label {
+        font-size: 7.5pt !important;
+        margin-bottom: 1.5mm !important;
+        color: #94a3b8 !important;
+      }
+      .card-stat {
+        font-size: 18pt !important;
+        margin-bottom: 1.5mm !important;
+        color: #ffffff !important;
+        line-height: 1.15 !important;
+      }
+      .card-desc {
+        font-size: 8.5pt !important;
+        line-height: 1.45 !important;
+        color: #cbd5e1 !important;
+      }
+    }
+
   </style>
 </head>
 <body>
